@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AuthMiddleware interface {
+type Interface interface {
 	AuthMiddleware(c *gin.Context)
 }
 
@@ -25,7 +25,7 @@ type InitParam struct {
 	Service *services.Services
 }
 
-func NewAuthMiddleware(params InitParam) AuthMiddleware {
+func Init(params InitParam) Interface {
 	return &authMiddleware{service: params.Service}
 }
 

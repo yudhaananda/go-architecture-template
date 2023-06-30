@@ -11,6 +11,7 @@ initialize:
 	@go get "github.com/alecthomas/template"
 	@go get "github.com/swaggo/gin-swagger"
 	@go get "github.com/dgrijalva/jwt-go"
+	@go get "github.com/joho/godotenv"
 
 .PHONY: run
 run: swaggo

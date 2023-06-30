@@ -17,7 +17,7 @@ import (
 // @Param registerInput body models.UserInput true "registerInput"
 // @Accept json
 // @Produce json
-// @Success 200 {object} formatter.AuthFormatter
+// @Success 200 {object} models.Response
 // @Router /register [post]
 func (h *handler) Register(ctx *gin.Context) {
 	var input models.Query[models.UserInput]
@@ -50,7 +50,7 @@ func (h *handler) Register(ctx *gin.Context) {
 // @Param loginInput body models.Login true "loginInput"
 // @Accept json
 // @Produce json
-// @Success 200 {object} formatter.AuthFormatter
+// @Success 200 {object} models.Response
 // @Router /login [post]
 func (h *handler) Login(ctx *gin.Context) {
 	var input models.Login

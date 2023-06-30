@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"template/docs/swagger"
+	"template/src/middleware"
 	"template/src/services"
 
 	"github.com/gin-contrib/cors"
@@ -17,19 +18,19 @@ type Handler interface {
 }
 
 type handler struct {
-	service *services.Services
-	// middleware middleware.AuthMiddleware
+	service    *services.Services
+	middleware middleware.Interface
 }
 
 type InitParam struct {
-	Service *services.Services
-	// Middleware middleware.AuthMiddleware
+	Service    *services.Services
+	Middleware middleware.Interface
 }
 
 func Init(params InitParam) Handler {
 	handler := &handler{
-		service: params.Service,
-		// middleware: params.Middleware,
+		service:    params.Service,
+		middleware: params.Middleware,
 	}
 	return handler
 }
@@ -60,7 +61,9 @@ func (h *handler) register() *gin.Engine {
 	swagger.SwaggerInfo.BasePath = "/api/v1"
 
 	// API Route
-	userApi := api.Group("/user")
+	api.POST("/login", h.Login)
+	api.POST("/register", h.Register)
+	userApi := api.Group("/user").Use(h.middleware.AuthMiddleware)
 	{
 		userApi.GET("/", h.GetUser)
 		userApi.POST("/", h.CreateUser)
