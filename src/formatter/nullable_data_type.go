@@ -9,12 +9,12 @@ import (
 
 var nullBytes = []byte("null")
 
-type DataType[T comparable] struct {
+type NullableDataType[T comparable] struct {
 	Data  T
 	Valid bool
 }
 
-func (n *DataType[T]) Scan(value any) error {
+func (n *NullableDataType[T]) Scan(value any) error {
 	var data T
 	if value == nil {
 		n.Data, n.Valid = data, false
@@ -127,21 +127,21 @@ func (n *DataType[T]) Scan(value any) error {
 	return nil
 }
 
-func (n DataType[T]) Value() (driver.Value, error) {
+func (n NullableDataType[T]) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
 	}
 	return n.Data, nil
 }
 
-func (i *DataType[T]) MarshalJSON() ([]byte, error) {
+func (i *NullableDataType[T]) MarshalJSON() ([]byte, error) {
 	if !i.Valid {
 		return nullBytes, nil
 	}
 	return json.Marshal(i.Data)
 }
 
-func (i *DataType[T]) UnmarshalJSON(b []byte) error {
+func (i *NullableDataType[T]) UnmarshalJSON(b []byte) error {
 	if bytes.Equal(b, nullBytes) {
 		return nil
 	}
