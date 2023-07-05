@@ -7,13 +7,15 @@ import (
 	"template/src/filter"
 	"template/src/models"
 	"template/src/repositories/user"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Interface interface {
 	Register(ctx context.Context, input models.Query[models.UserInput]) error
-	Login(ctx context.Context, input models.Login) (models.User, error)
+	Login(ctx context.Context, input models.Login) ([]models.User, string, error)
 }
 
 type authService struct {
@@ -29,8 +31,22 @@ func Init(param Param) *authService {
 }
 
 func (s *authService) Register(ctx context.Context, input models.Query[models.UserInput]) error {
+	_, count, err := s.userRepository.Get(ctx, filter.Paging[filter.UserFilter]{
+		Page: 1,
+		Take: 1,
+		Filter: filter.UserFilter{
+			UserName: input.Model.UserName,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return errors.New("username already taken by another user")
+	}
 
-	key := rand.Intn(9)
+	min := 4
+	key := rand.Intn(9) + min
 	password, err := bcrypt.GenerateFromPassword([]byte(input.Model.Password), key)
 	if err != nil {
 		return err
@@ -44,7 +60,7 @@ func (s *authService) Register(ctx context.Context, input models.Query[models.Us
 	return nil
 }
 
-func (s *authService) Login(ctx context.Context, input models.Login) (models.User, error) {
+func (s *authService) Login(ctx context.Context, input models.Login) ([]models.User, string, error) {
 
 	users, _, err := s.userRepository.Get(ctx, filter.Paging[filter.UserFilter]{
 		Page: 1,
@@ -54,18 +70,38 @@ func (s *authService) Login(ctx context.Context, input models.Login) (models.Use
 		},
 	})
 	if err != nil {
-		return models.User{}, err
+		return []models.User{}, "", err
 	}
 	if len(users) == 0 {
-		return models.User{}, errors.New("user not found")
+		return []models.User{}, "", errors.New("user not found")
 	}
 
-	user := users[0]
-
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(users[0].Password), []byte(input.Password))
 	if err != nil {
-
-		return models.User{}, err
+		return []models.User{}, "", errors.New("wrong password")
 	}
-	return user, nil
+
+	token, err := s.generateToken(users[0].Id, users[0].UserName)
+	if err != nil {
+		return []models.User{}, "", err
+	}
+
+	return users, token, nil
+}
+
+func (s *authService) generateToken(userId int, userName string) (string, error) {
+	claim := jwt.MapClaims{}
+
+	claim["user_id"] = userId
+	claim["time"] = time.Now().Add(time.Hour * 24 * 3)
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+
+	signedToken, err := token.SignedString(models.GetSecret())
+
+	if err != nil {
+		return signedToken, err
+	}
+
+	return signedToken, nil
 }

@@ -63,15 +63,12 @@ func (h *handler) Login(ctx *gin.Context) {
 		return
 	}
 
-	loggedinUser, err := h.service.Auth.Login(ctx, input)
+	loggedinUser, token, err := h.service.Auth.Login(ctx, input)
 	if err != nil {
 		response := models.APIResponse("Login Failed", http.StatusUnprocessableEntity, "Failed", nil, err.Error())
 		ctx.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
-
-	token, err := h.service.Jwt.GenerateToken(loggedinUser.Id, loggedinUser.UserName)
-
 	if err != nil {
 		errorMessage := err.Error()
 
@@ -80,10 +77,9 @@ func (h *handler) Login(ctx *gin.Context) {
 		return
 	}
 
-	formatter := formatter.Auth[models.User]{}
-	formatter.Format(loggedinUser, token)
-
-	response := models.APIResponse("Logedin", http.StatusOK, "success", formatter, nil)
+	auth := formatter.Auth{}
+	auth.AuthFormat(loggedinUser, token)
+	response := models.APIResponse("Loged In", http.StatusOK, "success", auth, nil)
 
 	ctx.JSON(http.StatusOK, response)
 }

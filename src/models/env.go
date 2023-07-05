@@ -24,3 +24,7 @@ func SetEnv() Env {
 	}
 	return env
 }
+
+func GetSecret() []byte {
+	return []byte(SetEnv().JWT_SECRET_TOKEN)
+}

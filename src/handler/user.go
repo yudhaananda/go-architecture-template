@@ -17,6 +17,7 @@ import (
 // @Schemes
 // @Description
 // @Tags User
+// @Security ApiKeyAuth
 // @Param paging query filter.Paging false "paging"
 // @Param filter query filter.UserFilter false "filter"
 // @Accept json
@@ -52,6 +53,7 @@ func (h *handler) GetUser(ctx *gin.Context) {
 // @Schemes
 // @Description
 // @Tags User
+// @Security ApiKeyAuth
 // @Param models body models.UserInput true "models"
 // @Accept json
 // @Produce json
@@ -82,6 +84,7 @@ func (h *handler) CreateUser(ctx *gin.Context) {
 // @Schemes
 // @Description
 // @Tags User
+// @Security ApiKeyAuth
 // @Param id path integer true "id"
 // @Param models body models.UserInput true "models"
 // @Accept json
@@ -120,6 +123,7 @@ func (h *handler) UpdateUser(ctx *gin.Context) {
 // @Schemes
 // @Description
 // @Tags User
+// @Security ApiKeyAuth
 // @Param id path integer true "id"
 // @Accept json
 // @Produce json

@@ -7,9 +7,9 @@ import (
 
 type User struct {
 	Id        int                                   `db:"id" json:"id"`
-	Name      formatter.NullableDataType[string]    `db:"name" json:"name"`
 	UserName  string                                `db:"user_name" json:"userName"`
 	Password  string                                `db:"password" json:"password"`
+	Name      formatter.NullableDataType[string]    `db:"name" json:"name"`
 	Birthdate formatter.NullableDataType[time.Time] `db:"birthdate" json:"birthdate"`
 	Age       formatter.NullableDataType[int]       `db:"age" json:"age"`
 	Flag      formatter.NullableDataType[float32]   `db:"flag" json:"flag"`
@@ -23,6 +23,7 @@ type User struct {
 
 type UserInput struct {
 	Name      string    `db:"name"`
+	UserName  string    `db:"user_name" json:"userName"`
 	Password  string    `db:"password" json:"password"`
 	Birthdate time.Time `db:"birthdate" example:"2022-06-21T10:32:29Z"`
 	Age       int       `db:"age"`

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"template/src/filter"
@@ -31,9 +32,9 @@ func Init(params InitParam) Interface {
 
 func (a *authMiddleware) AuthMiddleware(ctx *gin.Context) {
 	authheader := ctx.GetHeader("Authorization")
-
+	fmt.Println(authheader)
 	if !strings.Contains(authheader, "Bearer") {
-		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil, nil)
+		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error1", nil, nil)
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		return
 	}
@@ -44,10 +45,10 @@ func (a *authMiddleware) AuthMiddleware(ctx *gin.Context) {
 		tokenString = arrayToken[1]
 	}
 
-	token, err := a.service.Jwt.ValidateToken(tokenString)
+	token, err := a.validateToken(tokenString)
 
 	if err != nil {
-		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil, err.Error())
+		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error2", nil, err.Error())
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		return
 	}
@@ -55,7 +56,7 @@ func (a *authMiddleware) AuthMiddleware(ctx *gin.Context) {
 	claim, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok || !token.Valid {
-		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil, errors.New("invalid token").Error())
+		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error3", nil, errors.New("invalid token").Error())
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		return
 	}
@@ -65,13 +66,13 @@ func (a *authMiddleware) AuthMiddleware(ctx *gin.Context) {
 	dateTime, err := time.Parse(time.RFC3339Nano, claim["time"].(string))
 
 	if err != nil {
-		response := models.APIResponse("Error Parse Date", http.StatusUnauthorized, "error", nil, err.Error())
+		response := models.APIResponse("Error Parse Date", http.StatusUnauthorized, "error4", nil, err.Error())
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		return
 	}
 
 	if dateTime.Before(time.Now()) {
-		response := models.APIResponse("Session End", http.StatusUnauthorized, "error", nil, errors.New("session end").Error())
+		response := models.APIResponse("Session End", http.StatusUnauthorized, "error5", nil, errors.New("session end").Error())
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		return
 	}
@@ -82,16 +83,32 @@ func (a *authMiddleware) AuthMiddleware(ctx *gin.Context) {
 	users, _, err := a.service.User.Get(ctx, paging)
 
 	if err != nil {
-		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil, err)
+		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error6", nil, err)
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		return
 	}
 	if len(users) == 0 {
-		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil, errors.New("no user found").Error())
+		response := models.APIResponse("Unauthorized", http.StatusUnauthorized, "error7", nil, errors.New("no user found").Error())
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 		return
 	}
 	user := users[0]
 
 	ctx.Set("currentUser", user)
+}
+
+func (s *authMiddleware) validateToken(token string) (*jwt.Token, error) {
+	encodeToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		_, ok := t.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			return nil, errors.New("invalid token")
+		}
+		return []byte(models.GetSecret()), nil
+	})
+
+	if err != nil {
+		return encodeToken, err
+	}
+
+	return encodeToken, nil
 }
