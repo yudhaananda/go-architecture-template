@@ -65,11 +65,6 @@ func (h *handler) Login(ctx *gin.Context) {
 
 	loggedinUser, token, err := h.service.Auth.Login(ctx, input)
 	if err != nil {
-		response := models.APIResponse("Login Failed", http.StatusUnprocessableEntity, "Failed", nil, err.Error())
-		ctx.JSON(http.StatusUnprocessableEntity, response)
-		return
-	}
-	if err != nil {
 		errorMessage := err.Error()
 
 		response := models.APIResponse("Login Failed", http.StatusUnprocessableEntity, "Failed", nil, errorMessage)
