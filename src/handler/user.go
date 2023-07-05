@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"template/src/filter"
@@ -33,7 +32,7 @@ func (h *handler) GetUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
-	fmt.Println(filter)
+
 	users, count, err := h.service.User.Get(ctx, filter)
 	if err != nil {
 		response := models.APIResponse("Get User Failed", http.StatusInternalServerError, "Failed", nil, err.Error())

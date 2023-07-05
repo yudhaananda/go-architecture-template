@@ -32,9 +32,9 @@ func Init(param Param) Interface {
 func (s *userService) Delete(ctx context.Context, id int) error {
 	input := models.Query[models.UserInput]{
 		Model: models.UserInput{
-			Flag:      -1,
+			Status:    -1,
 			DeletedAt: time.Now(),
-			DeletedBy: "system",
+			DeletedBy: ctx.Value("currentUser").(models.User).Id,
 		},
 	}
 
@@ -43,14 +43,14 @@ func (s *userService) Delete(ctx context.Context, id int) error {
 
 func (s *userService) Update(ctx context.Context, input models.Query[models.UserInput], id int) error {
 	input.Model.UpdatedAt = time.Now()
-	input.Model.UpdatedBy = "system"
+	input.Model.UpdatedBy = ctx.Value("currentUser").(models.User).Id
 
 	return s.userRepository.Update(ctx, input, id)
 }
 
 func (s *userService) Create(ctx context.Context, input models.Query[models.UserInput]) error {
 	input.Model.CreatedAt = time.Now()
-	input.Model.CreatedBy = "system"
+	input.Model.CreatedBy = ctx.Value("currentUser").(models.User).Id
 
 	return s.userRepository.Create(ctx, input)
 }

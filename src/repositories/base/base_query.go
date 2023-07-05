@@ -2,11 +2,15 @@ package base
 
 const (
 	Select = `
-	SELECT 
-		*
-	FROM
-		`
-	Create = `INSERT INTO `
-	Update = `UPDATE `
-	Count  = `SELECT COUNT(*) FROM `
+		SELECT
+		    *
+		FROM `
+	Create = `
+		INSERT INTO `
+	Count = `
+		SELECT
+		    COUNT(*)
+		FROM `
+	Update = `
+		UPDATE `
 )

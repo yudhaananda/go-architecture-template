@@ -5,11 +5,11 @@ CREATE TABLE IF NOT EXISTS `user` (
     `name` VARCHAR(255),
     `birthdate` DATE,
     `age` INT,
-    `flag` INT NOT NULL DEFAULT '1',
+    `status` INT NOT NULL DEFAULT '1',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `created_by` VARCHAR(255),
+    `created_by` INT,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `updated_by` VARCHAR(255),
+    `updated_by` INT,
     `deleted_at`TIMESTAMP,
-    `deleted_by` VARCHAR(255)
+    `deleted_by` INT
 ) ENGINE = INNODB;

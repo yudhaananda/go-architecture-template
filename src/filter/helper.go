@@ -22,7 +22,7 @@ func (f *Paging[T]) SetDefault() {
 func (f *Paging[T]) QueryBuilder() string {
 	query := " WHERE 1=1"
 	if f.IsActive {
-		query += " AND flag=1"
+		query += " AND status=1"
 	}
 	ref := reflect.ValueOf(f.Filter)
 	tpe := ref.Type()

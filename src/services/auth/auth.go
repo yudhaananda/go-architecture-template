@@ -45,8 +45,7 @@ func (s *authService) Register(ctx context.Context, input models.Query[models.Us
 		return errors.New("username already taken by another user")
 	}
 
-	min := 4
-	key := rand.Intn(9) + min
+	key := rand.Intn(9)
 	password, err := bcrypt.GenerateFromPassword([]byte(input.Model.Password), key)
 	if err != nil {
 		return err
