@@ -13,6 +13,7 @@ initialize:
 	@go get "github.com/swaggo/gin-swagger"
 	@go get "github.com/dgrijalva/jwt-go"
 	@go get "github.com/joho/godotenv"
+	@go get "github.com/DATA-DOG/go-sqlmock"
 
 .PHONY: build
 build:
