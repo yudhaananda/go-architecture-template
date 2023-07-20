@@ -5,6 +5,7 @@ swaggo:
 
 .PHONY: initialize
 initialize:
+	@go install github.com/golang/mock/mockgen@v1.6.0
 	@go get "github.com/go-sql-driver/mysql"
 	@go get "github.com/gin-gonic/gin"
 	@go get "github.com/gin-contrib/cors"
@@ -22,3 +23,11 @@ build:
 .PHONY: run
 run: swaggo build
 	@./build/app
+
+.PHONY: mock
+mock:
+	@`go env GOPATH`/bin/mockgen -source src/repositories/$(repositories)/$(repositories).go -destination src/repositories/mock/$(repositories)/$(repositories).go
+
+.PHONY: mock-all
+mock-all:
+	@make mock repositories=user

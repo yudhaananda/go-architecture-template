@@ -93,7 +93,7 @@ func (a *authMiddleware) AuthMiddleware(ctx *gin.Context) {
 	}
 	user := users[0]
 
-	ctx.Set("currentUser", user)
+	ctx.Set(models.UserKey, user)
 }
 
 func (s *authMiddleware) validateToken(token string) (*jwt.Token, error) {

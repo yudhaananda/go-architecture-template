@@ -142,6 +142,6 @@ func (h *handler) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	response := models.APIResponse("Delete User Success", http.StatusInternalServerError, "Success", nil, nil)
+	response := models.APIResponse("Delete User Success", http.StatusOK, "Success", nil, nil)
 	ctx.JSON(http.StatusOK, response)
 }
