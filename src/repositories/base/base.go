@@ -62,7 +62,7 @@ func (r *BaseRepository[T, M, F]) Create(ctx context.Context, input models.Query
 }
 
 func (r *BaseRepository[T, M, F]) Get(ctx context.Context, paging filter.Paging[F]) ([]M, int, error) {
-	users := []M{}
+	models := []M{}
 	var count int
 
 	where := paging.QueryBuilder()
@@ -70,26 +70,26 @@ func (r *BaseRepository[T, M, F]) Get(ctx context.Context, paging filter.Paging[
 
 	rowCount, err := r.Db.QueryContext(ctx, Count+r.TableName+where)
 	if err != nil {
-		return users, 0, err
+		return models, 0, err
 	}
 
 	defer rowCount.Close()
 	for rowCount.Next() {
 		err = rowCount.Scan(&count)
 		if err != nil {
-			return users, count, err
+			return models, count, err
 		}
 	}
 	row, err := r.Db.QueryContext(ctx, Select+r.TableName+where+pagination)
 	if err != nil {
-		return users, count, err
+		return models, count, err
 	}
 
 	defer row.Close()
 	for row.Next() {
-		var user M
+		var model M
 
-		s := reflect.ValueOf(&user).Elem()
+		s := reflect.ValueOf(&model).Elem()
 		numCols := s.NumField()
 		columns := make([]interface{}, numCols)
 		for i := 0; i < numCols; i++ {
@@ -99,10 +99,10 @@ func (r *BaseRepository[T, M, F]) Get(ctx context.Context, paging filter.Paging[
 
 		err := row.Scan(columns...)
 		if err != nil {
-			return users, count, err
+			return models, count, err
 		}
-		users = append(users, user)
+		models = append(models, model)
 	}
 
-	return users, count, nil
+	return models, count, nil
 }
