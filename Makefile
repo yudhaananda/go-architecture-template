@@ -36,4 +36,5 @@ mock:
 
 .PHONY: mock-all
 mock-all:
+	@make mock repositories=auth
 	@make mock repositories=user
