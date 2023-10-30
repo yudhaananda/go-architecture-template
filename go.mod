@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
