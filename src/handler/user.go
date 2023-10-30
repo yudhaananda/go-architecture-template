@@ -17,7 +17,7 @@ import (
 // @Description
 // @Tags User
 // @Security ApiKeyAuth
-// @Param paging query filter.Paging false "paging"
+// @Param paging query filter.Paging[filter.UserFilter] false "paging"
 // @Param filter query filter.UserFilter false "filter"
 // @Accept json
 // @Produce json
