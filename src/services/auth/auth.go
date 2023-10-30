@@ -80,7 +80,7 @@ func (s *authService) Login(ctx context.Context, input models.Login) ([]models.U
 		return []models.User{}, "", errors.New("wrong password")
 	}
 
-	token, err := s.generateToken(users[0].Id, users[0].UserName)
+	token, err := s.generateToken(int(users[0].Id), users[0].UserName)
 	if err != nil {
 		return []models.User{}, "", err
 	}
