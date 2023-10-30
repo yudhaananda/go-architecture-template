@@ -3,6 +3,7 @@ test:
 	@go test --tags unit -parallel 20 -failfast \
 		`go list ./... | grep -v mocks | grep -v docs` \
 		-race -short -coverprofile=./cov.out
+		
 .PHONY: swaggo
 swaggo:
 	@/bin/rm -rf ./docs/swagger
