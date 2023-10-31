@@ -19,7 +19,7 @@ db_info :
     host : "127.0.0.1"
     port : 3306
     username : "root"
-    password : ""
+    password : "password"
     database : "template"
     type: 0 # database type (0:mysql , 1:sqlite , 2:mssql)
 self_type_define: # Custom data type mapping
