@@ -231,7 +231,9 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	query := regexp.QuoteMeta("SELECT * FROM user WHERE 1=1")
+	tempModels := models.Query[models.User]{}
+	member := tempModels.BuildTableMember()
+	query := regexp.QuoteMeta("SELECT " + member + " FROM user WHERE 1=1")
 	queryCount := regexp.QuoteMeta("SELECT COUNT(*) FROM user")
 	mockTime := time.Date(2022, 5, 11, 0, 0, 0, 0, time.UTC)
 
