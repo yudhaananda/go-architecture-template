@@ -11,6 +11,23 @@ type Query[T comparable] struct {
 	Model T
 }
 
+func (q *Query[T]) BuildTableMember() string {
+	member := ""
+
+	ref := reflect.ValueOf(q.Model)
+	tpe := ref.Type()
+
+	isQueryNeedComa := false
+	for i := 0; i < tpe.NumField(); i++ {
+		if isQueryNeedComa {
+			member += ", "
+		}
+		member += tpe.Field(i).Tag.Get("db")
+		isQueryNeedComa = true
+	}
+	return member
+}
+
 func (q *Query[T]) BuildCreateQuery() string {
 	query := " "
 

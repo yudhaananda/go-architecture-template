@@ -3,7 +3,7 @@ package base
 const (
 	Select = `
 		SELECT
-		    *
+		    %s
 		FROM `
 	Create = `
 		INSERT INTO `

@@ -3,6 +3,7 @@ package base
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"reflect"
 	"template/src/filter"
 	"template/src/models"
@@ -62,11 +63,16 @@ func (r *BaseRepository[T, M, F]) Create(ctx context.Context, input models.Query
 }
 
 func (r *BaseRepository[T, M, F]) Get(ctx context.Context, paging filter.Paging[F]) ([]M, int, error) {
-	models := []M{}
-	var count int
 
-	where := paging.QueryBuilder()
-	pagination := paging.PaginationQuery()
+	var (
+		where      = paging.QueryBuilder()
+		pagination = paging.PaginationQuery()
+		tempModels = models.Query[M]{}
+		member     = tempModels.BuildTableMember()
+		query      = fmt.Sprintf(Select, member)
+		models     = []M{}
+		count      int
+	)
 
 	rowCount, err := r.Db.QueryContext(ctx, Count+r.TableName+where)
 	if err != nil {
@@ -80,7 +86,7 @@ func (r *BaseRepository[T, M, F]) Get(ctx context.Context, paging filter.Paging[
 			return models, count, err
 		}
 	}
-	row, err := r.Db.QueryContext(ctx, Select+r.TableName+where+pagination)
+	row, err := r.Db.QueryContext(ctx, query+r.TableName+where+pagination)
 	if err != nil {
 		return models, count, err
 	}
