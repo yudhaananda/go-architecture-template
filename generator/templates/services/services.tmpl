@@ -36,7 +36,7 @@ func (s *{{ .EntityNameCamelCase }}Service) Delete(ctx context.Context, id int) 
 		Model: models.{{ .EntityName }}Input{
 			Status:    -1,
 			DeletedAt: Now(),
-			DeletedBy: ctx.Value(models.UserKey).(models.{{ .EntityName }}).Id,
+			DeletedBy: ctx.Value(models.UserKey).(models.User).Id,
 		},
 	}
 
@@ -45,14 +45,14 @@ func (s *{{ .EntityNameCamelCase }}Service) Delete(ctx context.Context, id int) 
 
 func (s *{{ .EntityNameCamelCase }}Service) Update(ctx context.Context, input models.Query[models.{{ .EntityName }}Input], id int) error {
 	input.Model.UpdatedAt = Now()
-	input.Model.UpdatedBy = ctx.Value(string(models.UserKey)).(models.{{ .EntityName }}).Id
+	input.Model.UpdatedBy = ctx.Value(string(models.UserKey)).(models.User).Id
 
 	return s.{{ .EntityNameCamelCase }}Repository.Update(ctx, input, id)
 }
 
 func (s *{{ .EntityNameCamelCase }}Service) Create(ctx context.Context, input models.Query[models.{{ .EntityName }}Input]) error {
 	input.Model.CreatedAt = Now()
-	input.Model.CreatedBy = ctx.Value(models.UserKey).(models.{{ .EntityName }}).Id
+	input.Model.CreatedBy = ctx.Value(models.UserKey).(models.User).Id
 
 	return s.{{ .EntityNameCamelCase }}Repository.Create(ctx, input)
 }
