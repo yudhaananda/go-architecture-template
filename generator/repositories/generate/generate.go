@@ -56,6 +56,7 @@ func (r *generate) Append(filePath, tag, append string) error {
 	for i, v := range dataArr {
 		if strings.Contains(v, tag) {
 			dataArr = helper.InsertIntoSlice(dataArr, i+1, append)
+			break
 		}
 	}
 	data = []byte(strings.Join(dataArr, "\n"))
