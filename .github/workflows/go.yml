@@ -28,13 +28,7 @@ jobs:
       run: |
          go env -w GOPRIVATE=github.com/${{ github.repository_owner }}/*
          go install github.com/swaggo/swag/cmd/swag@v1.8.12
-         cd generator
          go mod download
-         cd ..
-         go mod download
-         make swaggo
-      env:
-        GOPATH: /home/runner/go
 
     - name: Build
       run: go build -v ./...
