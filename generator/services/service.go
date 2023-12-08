@@ -17,7 +17,6 @@ func Init(param Param) *Services {
 	return &Services{
 		Generate: generate.Init(generate.Params{
 			GenerateRepo: param.Repositories.Generate,
-			Zipping:      param.Repositories.Zipping,
 		}),
 	}
 }

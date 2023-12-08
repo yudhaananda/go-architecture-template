@@ -1,10 +1,12 @@
 package generate
 
 import (
+	"fmt"
 	"generator/helper"
 	"generator/models"
 	generateRepo "generator/repositories/generate"
-	"generator/repositories/zipping"
+	"os"
+	"time"
 )
 
 type Interface interface {
@@ -13,18 +15,15 @@ type Interface interface {
 
 type generate struct {
 	generateRepo generateRepo.Interface
-	zipping      zipping.Interface
 }
 
 type Params struct {
 	GenerateRepo generateRepo.Interface
-	Zipping      zipping.Interface
 }
 
 func Init(param Params) Interface {
 	return &generate{
 		generateRepo: param.GenerateRepo,
-		zipping:      param.Zipping,
 	}
 }
 
@@ -222,6 +221,21 @@ func (s *generate) Generate(input models.Model) error {
 			return err
 		}
 
+		if err := s.generateRepo.Generate(
+			input.ProjectName,
+			"src/repositories/mock/"+helper.ConvertToSnakeCase(entity),
+			helper.ConvertToSnakeCase(entity)+".go",
+			"templates/mock/mock.tmpl",
+			"mock.tmpl",
+			models.MockInput{
+				ProjectName:         input.ProjectName,
+				EntityNameSnakeCase: helper.ConvertToSnakeCase(entity),
+				EntityName:          entity,
+			},
+		); err != nil {
+			return err
+		}
+
 		if err := s.initializeRepo(entity, input.ProjectName); err != nil {
 			return err
 		}
@@ -235,6 +249,28 @@ func (s *generate) Generate(input models.Model) error {
 		); err != nil {
 			return err
 		}
+	}
+
+	fileName := time.Now().Format("20060201")
+	count := 0
+	for {
+		if _, err := os.Open(helper.Path() + "docs/sql/" + fileName + fmt.Sprintf("%02d.sql", count)); err == nil {
+			count++
+		} else {
+			fileName += fmt.Sprintf("%02d.sql", count)
+			break
+		}
+	}
+
+	if err := s.generateRepo.Generate(
+		input.ProjectName,
+		"docs/sql",
+		fileName,
+		"templates/sql/sql.tmpl",
+		"sql.tmpl",
+		sql,
+	); err != nil {
+		return err
 	}
 
 	return nil
