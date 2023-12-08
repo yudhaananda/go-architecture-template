@@ -23,7 +23,7 @@ jobs:
         
     - name: Go Prep
       run: |
-         go env GOPRIVATE=github.com/${{ github.repository_owner }}
+         go env GOPRIVATE=github.com/${{ github.repository_owner }} -w
          go install github.com/swaggo/swag/cmd/swag@v1.8.12
          go mod download
          make swaggo
