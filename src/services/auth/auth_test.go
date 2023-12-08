@@ -69,7 +69,9 @@ func Test_authService_Register(t *testing.T) {
 				},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context.Background(), gomock.Any()).Return([]models.User{{}}, 1, nil)
+				mock.user.EXPECT().Get(context.Background(), gomock.Any()).Return([]models.User{
+					{},
+				}, 1, nil)
 			},
 			wantErr: true,
 		},
@@ -217,7 +219,9 @@ func Test_authService_Login(t *testing.T) {
 					Page:   1,
 					Take:   1,
 					Filter: filter.UserFilter{},
-				}).Return([]models.User{{}}, 1, nil)
+				}).Return([]models.User{
+					{},
+				}, 1, nil)
 				mock.auth.EXPECT().ComparePassword([]byte(""), []byte("")).Return(assert.AnError)
 			},
 			wantUser: []models.User{},
@@ -233,7 +237,12 @@ func Test_authService_Login(t *testing.T) {
 					Page:   1,
 					Take:   1,
 					Filter: filter.UserFilter{},
-				}).Return([]models.User{{Id: 1, UserName: "test"}}, 1, nil)
+				}).Return([]models.User{
+					{
+						Id:       1,
+						UserName: "test",
+					},
+				}, 1, nil)
 				mock.auth.EXPECT().ComparePassword([]byte(""), []byte("")).Return(nil)
 				mock.auth.EXPECT().GenerateToken(1, "test").Return("", assert.AnError)
 			},
@@ -250,7 +259,12 @@ func Test_authService_Login(t *testing.T) {
 					Page:   1,
 					Take:   1,
 					Filter: filter.UserFilter{},
-				}).Return([]models.User{{Id: 1, UserName: "test"}}, 1, nil)
+				}).Return([]models.User{
+					{
+						Id:       1,
+						UserName: "test",
+					},
+				}, 1, nil)
 				mock.auth.EXPECT().ComparePassword([]byte(""), []byte("")).Return(nil)
 				mock.auth.EXPECT().GenerateToken(1, "test").Return("token", nil)
 			},

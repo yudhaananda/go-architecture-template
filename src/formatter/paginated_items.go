@@ -15,7 +15,7 @@ func (f *PaginatedItems) Format(pageIndex int, pageSize, count float64, take flo
 	f.PageSize = int(pageSize)
 	if pageSize > 0 {
 		temp := count / take
-		if temp > float64(int(temp)) {
+		if int(count)%int(take) != 0 {
 			temp++
 		}
 		f.PageCount = int(temp)

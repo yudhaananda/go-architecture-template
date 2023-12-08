@@ -1,0 +1,12 @@
+{
+    "projectName": "template",
+    "entity": {
+        "UserRole": [
+            {
+                "name":"RoleName",
+                "dataType":"string",
+                "isNullable":false
+            }
+        ]
+    }
+}

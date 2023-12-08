@@ -310,9 +310,15 @@ func Test_userService_Get(t *testing.T) {
 				filter.Paging[filter.UserFilter]{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context, filter.Paging[filter.UserFilter]{IsActive: true}).Return([]models.User{{}, {}}, 2, nil)
+				mock.user.EXPECT().Get(context, filter.Paging[filter.UserFilter]{IsActive: true}).Return([]models.User{
+					{},
+					{},
+				}, 2, nil)
 			},
-			want:      []models.User{{}, {}},
+			want: []models.User{
+				{},
+				{},
+			},
 			wantCount: 2,
 		},
 	}
@@ -325,14 +331,8 @@ func Test_userService_Get(t *testing.T) {
 				t.Errorf("user.Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if len(users) != len(tt.want) {
-				t.Errorf("user.Get() len users = %v, len want %v", len(users), len(tt.want))
-				return
-			}
-			if count != tt.wantCount {
-				t.Errorf("user.Get() count = %v, wantCount %v", count, tt.wantCount)
-				return
-			}
+			assert.Equal(t, tt.want, users)
+			assert.Equal(t, tt.wantCount, count)
 		})
 	}
 }
