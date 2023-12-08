@@ -41,6 +41,12 @@ func (s *generate) Generate(input models.Model) error {
 		sql = models.Table{}
 	)
 	for entity, members := range input.Entity {
+		where, isExists := s.isEntityExists(entity)
+		if isExists {
+			fmt.Println(entity + " " + where + " already exists")
+			continue
+		}
+
 		var (
 			entityValue     = []models.EntityValue{}
 			mockTableMember string
@@ -261,16 +267,17 @@ func (s *generate) Generate(input models.Model) error {
 			break
 		}
 	}
-
-	if err := s.generateRepo.Generate(
-		input.ProjectName,
-		"docs/sql",
-		fileName,
-		"templates/sql/sql.tmpl",
-		"sql.tmpl",
-		sql,
-	); err != nil {
-		return err
+	if len(sql.Entity) > 0 {
+		if err := s.generateRepo.Generate(
+			input.ProjectName,
+			"docs/sql",
+			fileName,
+			"templates/sql/sql.tmpl",
+			"sql.tmpl",
+			sql,
+		); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -322,4 +329,17 @@ func (s *generate) initializeService(entity, projectName string) error {
 		return err
 	}
 	return nil
+}
+
+func (s *generate) isEntityExists(entity string) (string, bool) {
+	files := []string{
+		"repositories",
+		"services",
+	}
+	for _, file := range files {
+		if _, err := os.Open(helper.Path() + "src/" + file + "/" + helper.ConvertToSnakeCase(entity) + "/" + helper.ConvertToSnakeCase(entity) + ".go"); err == nil {
+			return file, true
+		}
+	}
+	return "", false
 }
