@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"codegen/repositories/generate"
-	"codegen/repositories/zipping"
+	"generator/repositories/generate"
+	"generator/repositories/zipping"
 )
 
 type Repositories struct {

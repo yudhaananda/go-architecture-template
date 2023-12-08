@@ -1,9 +1,9 @@
 package main
 
 import (
-	"codegen/handlers"
-	"codegen/repositories"
-	"codegen/services"
+	"generator/handlers"
+	"generator/repositories"
+	"generator/services"
 )
 
 func main() {

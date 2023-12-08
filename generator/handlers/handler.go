@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"codegen/models"
-	"codegen/services"
+	"generator/models"
+	"generator/services"
 )
 
 type handler struct {

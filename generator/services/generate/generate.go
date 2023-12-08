@@ -1,10 +1,10 @@
 package generate
 
 import (
-	"codegen/helper"
-	"codegen/models"
-	generateRepo "codegen/repositories/generate"
-	"codegen/repositories/zipping"
+	"generator/helper"
+	"generator/models"
+	generateRepo "generator/repositories/generate"
+	"generator/repositories/zipping"
 )
 
 type Interface interface {

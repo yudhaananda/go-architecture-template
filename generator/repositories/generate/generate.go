@@ -6,7 +6,7 @@ import (
 	"strings"
 	"text/template"
 
-	"codegen/helper"
+	"generator/helper"
 )
 
 type Interface interface {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"codegen/helper"
+	"generator/helper"
 )
 
 const (

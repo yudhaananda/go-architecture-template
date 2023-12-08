@@ -1,8 +1,8 @@
 package services
 
 import (
-	"codegen/repositories"
-	"codegen/services/generate"
+	"generator/repositories"
+	"generator/services/generate"
 )
 
 type Services struct {
