@@ -2,3 +2,5 @@
 .env
 /build
 cov.out
+go.work
+go.work.sum

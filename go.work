@@ -1,6 +1,0 @@
-go 1.21.3
-
-use (
-	/Users/admin/Documents/apps/go-architecture-template
-	/Users/admin/Documents/apps/go-architecture-template/generator
-)
