@@ -3,37 +3,38 @@
 
 # name: Go
 
-# on:
-#   push:
-#     branches: [ "master" ]
-#   pull_request:
-#     branches: [ "master" ]
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
-# jobs:
+jobs:
 
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#     - uses: actions/checkout@v3
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
 
-#     - name: Set up Go
-#       uses: actions/setup-go@v4
-#       with:
-#         go-version: '1.21.3'
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21.3'
         
-#     - name: Clean Go Module Cache
-#       run: go clean -modcache
+    - name: Clean Go Module Cache
+      run: go clean -modcache
     
-#     - name: Go Prep
-#       run: |
-#          go env -w GOPRIVATE=github.com/${{ github.repository_owner }}/*
-#          go install github.com/swaggo/swag/cmd/swag@v1.8.12
-#          go mod download
-#       env:
-#         GOPATH: /home/runner/go
+    - name: Go Prep
+      run: |
+         go env -w GOPRIVATE=github.com/${{ github.repository_owner }}/*
+         go install github.com/swaggo/swag/cmd/swag@v1.8.12
+         go mod download
+         make swaggo
+      env:
+        GOPATH: /home/runner/go
 
-#     - name: Build
-#       run: go build -v ./...
+    - name: Build
+      run: make build
 
-#     - name: Test
-#       run: go test -v ./...
+    - name: Test
+      run: make test
