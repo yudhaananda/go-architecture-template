@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 	"template/src/filter"
 	"template/src/models"
 
@@ -14,12 +13,13 @@ import (
 )
 
 const (
-	User = "User"
+	User     = "User"
+	UserLink = "user"
 )
 
 func (h *htmx) GetUser(ctx *gin.Context) {
 	name := make(map[string]string)
-	name["Name"] = strings.ToLower(User)
+	name["Name"] = UserLink
 	tmpl := template.Must(template.ParseFiles(h.Path() + "view/middleware.html"))
 	tmpl.Execute(ctx.Writer, name)
 }
@@ -55,7 +55,7 @@ func (h *htmx) ModalEditUser(ctx *gin.Context) {
 	}
 	modal := models.Modal{
 		Name: template.HTML(User),
-		Link: template.HTML(strings.ToLower(User)),
+		Link: template.HTML(UserLink),
 		Id:   template.HTML(fmt.Sprint(id)),
 	}
 	modal.Members = users[0].ToModalMember()
