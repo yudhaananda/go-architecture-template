@@ -38,7 +38,7 @@
             </div>
           </div> 
           <div class="table-responsive">
-            <table class="table table-striped table-sm">
+            <table class="table table-striped table-sm table-hover">
               <thead>
                 <tr>
                   {{ range .Header }}
@@ -52,7 +52,7 @@
               </thead>
               <tbody>
                 {{ range .Column }}
-                <tr>
+                <tr hx-get="/{{ .Name }}/{{ .Id }}" hx-trigger="click">
                   {{range .Row}}
                   <td>{{ .Member }}</td>
                   {{ end }}
