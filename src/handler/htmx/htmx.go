@@ -40,7 +40,10 @@ func (h *htmx) RegisterPath(router *gin.Engine) *gin.Engine {
 	router.POST("/login", h.LoginValidate)
 	router.GET("/register", h.Register)
 	router.POST("/register", h.RegisterValidate)
-	router.GET("/", h.GetUser)
+	router.GET("/", h.GetDashboard)
+	router.GET("/dashboard-content", h.middleware.AuthMiddleware, h.DashboardContent)
+	router.GET("/user", h.GetUser)
+	router.GET("/user-content", h.middleware.AuthMiddleware, h.UserContent)
 	router.GET("/dashboard.css", func(ctx *gin.Context) {
 		css, err := os.ReadFile(h.Path() + "view/index.css")
 		if err != nil {

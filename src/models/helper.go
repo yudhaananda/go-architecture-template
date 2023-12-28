@@ -153,8 +153,16 @@ type MemberStruct struct {
 }
 
 type HTMXGet struct {
-	Header []MemberStruct
-	Column []Column
+	Header      []MemberStruct
+	Column      []Column
+	SideBar     []SideBar
+	SectionName template.HTML
+}
+
+type SideBar struct {
+	Active template.HTML
+	Name   template.HTML
+	Link   template.HTML
 }
 
 type Column struct {

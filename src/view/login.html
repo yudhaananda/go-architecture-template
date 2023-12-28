@@ -42,7 +42,7 @@
                 <button type="submit" class="btn btn-primary btn-block mb-4">
                   Login
                 </button>
-                <div class="text-center" hx-boost="true">
+                <div class="text-center">
                   <p>Don't have an account? <a href="/register" class="link-danger">Register</a></p>
                 </div>
               </form>
@@ -59,8 +59,12 @@
 </html>
 
 <script>
-  document.addEventListener('htmx:beforeSwap', function(event) {   
-    localStorage.setItem('token', event.detail.xhr.response);
-    window.location.href = '/';
+  document.addEventListener('htmx:beforeSwap', function(event) {  
+    if (event.detail.xhr.response != "null"){
+      localStorage.setItem('token', event.detail.xhr.response.replace(/"/g,''));
+      window.location.href = '/';
+    }else{
+      alert("login failed")
+    }
   });
 </script>
