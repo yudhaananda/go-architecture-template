@@ -32,7 +32,6 @@
       });
     });
     document.addEventListener('htmx:afterSwap', function(event) {  
-        console.log(event.detail.xhr.response)
         if (event.detail.xhr.response == "null"){
             window.location.href = '/{{ .Link }}';
     } 
