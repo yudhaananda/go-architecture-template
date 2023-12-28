@@ -1,13 +1,16 @@
 package htmx
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 	"strings"
 	"template/src/filter"
 	"template/src/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 const (
@@ -19,6 +22,69 @@ func (h *htmx) GetUser(ctx *gin.Context) {
 	name["Name"] = strings.ToLower(User)
 	tmpl := template.Must(template.ParseFiles(h.Path() + "view/middleware.html"))
 	tmpl.Execute(ctx.Writer, name)
+}
+
+func (h *htmx) DeleteUser(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+	err = h.service.User.Delete(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+	h.UserContent(ctx)
+}
+
+func (h *htmx) ModalEditUser(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+	users, _, err := h.service.User.Get(ctx, filter.Paging[filter.UserFilter]{
+		Filter: filter.UserFilter{
+			Id: id,
+		},
+	})
+	if err != nil || len(users) < 1 {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+	modal := models.Modal{
+		Name: template.HTML(User),
+		Link: template.HTML(strings.ToLower(User)),
+		Id:   template.HTML(fmt.Sprint(id)),
+	}
+	modal.Members = users[0].ToModalMember()
+	tmpl := template.Must(template.ParseFiles(h.Path() + "view/update_modal.html"))
+	tmpl.Execute(ctx.Writer, modal)
+}
+
+func (h *htmx) EditUser(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	var input models.UserInputForHTMX
+
+	err = ctx.ShouldBindWith(&input, binding.Form)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	err = h.service.User.Update(ctx, models.Query[models.UserInput]{
+		Model: input.ToUserInput(),
+	}, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, nil)
 }
 
 func (h *htmx) UserContent(ctx *gin.Context) {

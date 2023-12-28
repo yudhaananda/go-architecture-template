@@ -1,0 +1,37 @@
+<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <form id="login" 
+        hx-put="/{{ .Link }}/{{ .Id }}" 
+        hx-headers='js:{"Authorization": localStorage.token}'>
+      <div class="modal-header">
+        <h5 class="modal-title">Edit {{ .Name }}</h5>
+      </div>
+      <div class="modal-body">
+       
+        {{ range .Members }}
+        <div class="form-outline mb-4">
+            <input type="{{ .Type }}" id="{{ .Id }}" name="{{ .Name }}" class="form-control" value="{{ .Value }}"/>
+            <label class="form-label" for="{{ .Id }}">{{ .Placeholder }}</label>
+        </div>
+        {{ end }}
+       
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary btn-block">
+            Submit
+          </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </form>
+    </div>
+  </div>
+  <script type="text/javascript">
+    $(function () {
+      date = $('#birthdate').datepicker({
+        dateFormat: "yy-mm-dd"
+      });
+    });
+    document.addEventListener('htmx:afterSwap', function(event) {   
+    window.location.href = '/{{ .Link }}';
+  });
+  </script>

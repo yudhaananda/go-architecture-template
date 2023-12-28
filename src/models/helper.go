@@ -166,5 +166,22 @@ type SideBar struct {
 }
 
 type Column struct {
-	Row []MemberStruct
+	Row  []MemberStruct
+	Id   template.HTML
+	Name template.HTML
+}
+
+type Modal struct {
+	Name    template.HTML
+	Link    template.HTML
+	Id      template.HTML
+	Members []ModalMember
+}
+
+type ModalMember struct {
+	Type        template.HTML
+	Id          template.HTML
+	Name        template.HTML
+	Value       template.HTML
+	Placeholder template.HTML
 }

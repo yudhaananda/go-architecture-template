@@ -24,7 +24,7 @@ type Register struct {
 }
 
 func (m *Register) ToUserInput() UserInput {
-	date, _ := time.Parse("2006/01/02", m.Birthdate)
+	date, _ := time.Parse("01/02/2006", m.Birthdate)
 	age, _ := strconv.ParseInt(m.Age, 10, 64)
 	return UserInput{
 		Name:      m.Name,

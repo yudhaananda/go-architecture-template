@@ -44,6 +44,9 @@ func (h *htmx) RegisterPath(router *gin.Engine) *gin.Engine {
 	router.GET("/dashboard-content", h.middleware.AuthMiddleware, h.DashboardContent)
 	router.GET("/user", h.GetUser)
 	router.GET("/user-content", h.middleware.AuthMiddleware, h.UserContent)
+	router.DELETE("/user/:id", h.middleware.AuthMiddleware, h.DeleteUser)
+	router.GET("/user-edit-modal/:id", h.ModalEditUser)
+	router.PUT("/user/:id", h.middleware.AuthMiddleware, h.EditUser)
 	router.GET("/dashboard.css", func(ctx *gin.Context) {
 		css, err := os.ReadFile(h.Path() + "view/index.css")
 		if err != nil {
