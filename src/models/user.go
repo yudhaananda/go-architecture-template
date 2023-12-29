@@ -12,11 +12,11 @@ import (
 
 type User struct {
 	Id        int64                                 `db:"id" json:"id" header:"Id" type:"-"`
-	UserName  string                                `db:"user_name" json:"userName" header:"Username" type:"text"`
+	UserName  string                                `db:"user_name" json:"username" header:"Username" type:"text"`
 	Password  string                                `db:"password" json:"password" header:"Password" type:"password"`
 	Name      formatter.NullableDataType[string]    `db:"name" json:"name" header:"Name" type:"text"`
 	Birthdate formatter.NullableDataType[time.Time] `db:"birthdate" json:"birthdate" header:"Birthdate" type:"text"`
-	Age       formatter.NullableDataType[int64]     `db:"age" json:"age" header:"Age" type:"text"`
+	Age       formatter.NullableDataType[int64]     `db:"age" json:"age" header:"Age" type:"number"`
 	Status    int64                                 `db:"status" json:"status" header:"-" type:"-"`
 	CreatedAt formatter.NullableDataType[time.Time] `db:"created_at" json:"createdAt" header:"-" type:"-"`
 	CreatedBy formatter.NullableDataType[int64]     `db:"created_by" json:"createdBy" header:"-" type:"-"`

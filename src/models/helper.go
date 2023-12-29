@@ -156,6 +156,7 @@ type HTMXGet struct {
 	Header      []MemberStruct
 	Column      []Column
 	SideBar     []SideBar
+	Link        template.HTML
 	SectionName template.HTML
 }
 
@@ -175,6 +176,7 @@ type Modal struct {
 	Name    template.HTML
 	Link    template.HTML
 	Id      template.HTML
+	Method  template.HTML
 	Members []ModalMember
 }
 
