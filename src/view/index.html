@@ -43,6 +43,37 @@
             </div>
           </div> 
           <div class="table-responsive">
+            <p>
+              <button class="btn btn-outline-light btn-sm mb-2 mb-md-0 float-end" type="button" data-bs-toggle="collapse" data-bs-target="#filter-card" aria-expanded="true" aria-controls="filter-card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="20" viewBox="0 0 22 20" id="filter"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g stroke="#000" stroke-width="2" transform="translate(-1614 -1629)"><g transform="translate(1615 1630)"><path d="M20 0H0l8 9.46V16l4 2V9.46z"></path></g></g></g></svg>
+              </button>
+            </p>
+            <div class="collapse show" id="filter-card">
+              <div class="card card-body">
+              <form id="filter-form" 
+              hx-get="/{{ .Link }}-content" hx-target="#content" hx-headers='js:{"Authorization": localStorage.token}'
+              class="row">
+                {{ range .Filter }}
+                  <div class="form-outline mb-4 col-md-4">
+                    <input type="{{ .Type }}" id="{{ .Id }}-filter" name="{{ .Id }}" class="form-control" value="{{ .Value }}"/>
+                    <label class="form-label" for="{{ .Id }}-filter">{{ .Label }}</label>
+                </div>
+                {{ end }}
+                <div class="col-md-12">
+                  <div class="col-md-6"></div>
+                  <div class="col-md-6 float-end">
+                    <button type="submit" class="col-md-2 m-2 btn btn-outline-success btn-block float-end">
+                      Filter
+                    </button>
+                    <button hx-get="/{{ .Link }}-content" hx-target="#content" hx-headers='js:{"Authorization": localStorage.token}'
+                    type="button" class="col-md-2 m-2 btn btn-outline-danger btn-block float-end">
+                      Clear Filter
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            </div>
             <table class="table table-striped table-sm table-hover">
               <thead>
                 <tr>
@@ -99,4 +130,9 @@
         localStorage.clear();
         window.location.href="/login";
       }
+      $(function () {
+    date = $('#birthdate-filter').datepicker({
+      format:"yyyy-mm-ddT00:00:00Z"
+    });
+  });
     </script>

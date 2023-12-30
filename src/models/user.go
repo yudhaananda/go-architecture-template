@@ -182,7 +182,7 @@ func (m User) ToModalMember() (result []ModalMember) {
 				Id:          template.HTML(tpe.Field(i).Tag.Get("json")),
 				Type:        template.HTML(tpe.Field(i).Tag.Get("type")),
 				Name:        template.HTML(tpe.Field(i).Tag.Get("json")),
-				Value:       processValue(ref.Field(i).Type().Name(), "01/02/2006", ref.Field(i).Interface()),
+				Value:       processValue(ref.Field(i).Type().Name(), "2006-01-02T15:04:05Z", ref.Field(i).Interface()),
 				Placeholder: template.HTML(tpe.Field(i).Tag.Get("header")),
 			})
 	}

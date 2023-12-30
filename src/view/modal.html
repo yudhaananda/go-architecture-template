@@ -10,8 +10,8 @@
        
         {{ range .Members }}
         <div class="form-outline mb-4">
-            <input type="{{ .Type }}" id="{{ .Id }}" name="{{ .Name }}" class="form-control" value="{{ .Value }}"/>
-            <label class="form-label" for="{{ .Id }}">{{ .Placeholder }}</label>
+            <input type="{{ .Type }}" id="{{ .Id }}-input" name="{{ .Name }}" class="form-control" value="{{ .Value }}"/>
+            <label class="form-label" for="{{ .Id }}-input">{{ .Placeholder }}</label>
         </div>
         {{ end }}
        
@@ -27,7 +27,7 @@
   </div>
   <script type="text/javascript">
     $(function () {
-      date = $('#birthdate').datepicker({
+      date = $('#birthdate-input').datepicker({
         dateFormat: "yy-mm-dd"
       });
     });

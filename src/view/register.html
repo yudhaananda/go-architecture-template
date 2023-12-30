@@ -64,7 +64,7 @@
 <script type="text/javascript">
   $(function () {
     date = $('#birthdate').datepicker({
-      dateFormat: "yy-mm-dd"
+      format:"yyyy-mm-ddT00:00:00Z"
     });
   });
   document.addEventListener('htmx:afterSwap', function(event) {   

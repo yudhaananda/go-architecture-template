@@ -31,7 +31,8 @@
           <div class="card">
             <div class="card-body py-5 px-md-5">
               <form id="login" 
-                hx-post="/login" 
+                hx-post="/login"
+                hx-target="#token" 
                 hx-headers='{"x-application-name":"htmx"}'>
 
                 {{ range .Members }}
@@ -42,6 +43,7 @@
                 <button type="submit" class="btn btn-primary btn-block mb-4">
                   Login
                 </button>
+                <div id="token" style="display: none;"></div>
                 <div class="text-center">
                   <p>Don't have an account? <a href="/register" class="link-danger">Register</a></p>
                 </div>

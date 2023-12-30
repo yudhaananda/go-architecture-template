@@ -77,7 +77,7 @@ func (h *htmx) ModalEditUser(ctx *gin.Context) {
 }
 
 func (h *htmx) CreateUser(ctx *gin.Context) {
-	var input models.UserInputForHTMX
+	var input models.UserInput
 
 	err := ctx.ShouldBindWith(&input, binding.Form)
 	if err != nil {
@@ -85,7 +85,7 @@ func (h *htmx) CreateUser(ctx *gin.Context) {
 		return
 	}
 	err = h.service.User.Create(ctx, models.Query[models.UserInput]{
-		Model: input.ToUserInput(),
+		Model: input,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err)
@@ -101,7 +101,7 @@ func (h *htmx) EditUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	var input models.UserInputForHTMX
+	var input models.UserInput
 
 	err = ctx.ShouldBindWith(&input, binding.Form)
 	if err != nil {
@@ -109,7 +109,7 @@ func (h *htmx) EditUser(ctx *gin.Context) {
 		return
 	}
 	err = h.service.User.Update(ctx, models.Query[models.UserInput]{
-		Model: input.ToUserInput(),
+		Model: input,
 	}, id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err)
@@ -121,9 +121,16 @@ func (h *htmx) EditUser(ctx *gin.Context) {
 
 func (h *htmx) UserContent(ctx *gin.Context) {
 	user := models.User{}
+	var filter filter.Paging[filter.UserFilter]
+	filter.SetDefault()
+	if err := h.BindParams(ctx, &filter); err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
 	htmxGet := user.ToHeader()
 	htmxGet.SectionName = User
 	htmxGet.Link = UserLink
+	htmxGet.Filter = filter.Filter.ToHTMXFilter()
 	for _, feature := range models.Features {
 		temp := models.SideBar{
 			Name: template.HTML(feature.Name),
@@ -134,7 +141,8 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 		}
 		htmxGet.SideBar = append(htmxGet.SideBar, temp)
 	}
-	users, _, err := h.service.User.Get(ctx, filter.Paging[filter.UserFilter]{})
+
+	users, _, err := h.service.User.Get(ctx, filter)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return

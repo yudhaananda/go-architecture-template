@@ -158,6 +158,14 @@ type HTMXGet struct {
 	SideBar     []SideBar
 	Link        template.HTML
 	SectionName template.HTML
+	Filter      []HTMXFilter
+}
+
+type HTMXFilter struct {
+	Type  template.HTML
+	Id    template.HTML
+	Label template.HTML
+	Value template.HTML
 }
 
 type SideBar struct {
