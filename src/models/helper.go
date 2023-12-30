@@ -153,12 +153,28 @@ type MemberStruct struct {
 }
 
 type HTMXGet struct {
-	Header      []MemberStruct
-	Column      []Column
-	SideBar     []SideBar
-	Link        template.HTML
-	SectionName template.HTML
-	Filter      []HTMXFilter
+	Header       []MemberStruct
+	Column       []Column
+	SideBar      []SideBar
+	Link         template.HTML
+	SectionName  template.HTML
+	Filter       []HTMXFilter
+	Pagination   []HTMXPagination
+	IsFirst      bool
+	IsLast       bool
+	PreviousPage template.HTML
+	NextPage     template.HTML
+	LastPage     template.HTML
+	Take         template.HTML
+	QueryPage    template.HTML
+	QueryTake    template.HTML
+}
+
+type HTMXPagination struct {
+	Active    template.HTML
+	Link      template.HTML
+	Page      template.HTML
+	QueryPage template.HTML
 }
 
 type HTMXFilter struct {

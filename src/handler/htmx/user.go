@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"template/src/filter"
+	"template/src/formatter"
 	"template/src/models"
 
 	"github.com/gin-gonic/gin"
@@ -131,6 +132,18 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 	htmxGet.SectionName = User
 	htmxGet.Link = UserLink
 	htmxGet.Filter = filter.Filter.ToHTMXFilter()
+	for key, values := range ctx.Request.URL.Query() {
+		if key == "page" {
+			continue
+		}
+		for _, value := range values {
+			htmxGet.QueryPage += template.HTML(key + "=" + value + "&")
+			if key == "take" {
+				continue
+			}
+			htmxGet.QueryTake += template.HTML(key + "=" + value + "&")
+		}
+	}
 	for _, feature := range models.Features {
 		temp := models.SideBar{
 			Name: template.HTML(feature.Name),
@@ -142,10 +155,45 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 		htmxGet.SideBar = append(htmxGet.SideBar, temp)
 	}
 
-	users, _, err := h.service.User.Get(ctx, filter)
+	users, count, err := h.service.User.Get(ctx, filter)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
+	}
+
+	paginatedItems := formatter.PaginatedItems{}
+	paginatedItems.Format(filter.Page, float64(len(users)), float64(count), float64(filter.Take), users)
+	if paginatedItems.PageCount == paginatedItems.PageIndex {
+		htmxGet.IsLast = true
+	}
+	if paginatedItems.PageIndex == 1 {
+		htmxGet.IsFirst = true
+	}
+	htmxGet.Take = template.HTML(fmt.Sprint(filter.Take))
+	htmxGet.LastPage = template.HTML(fmt.Sprint(paginatedItems.PageCount))
+
+	pageCount := 0
+
+	for i := paginatedItems.PageIndex - 2; i <= paginatedItems.PageCount; i++ {
+		if i < 1 {
+			continue
+		}
+		if pageCount > 4 {
+			break
+		}
+		active := ""
+		if i == paginatedItems.PageIndex {
+			active = "active"
+			htmxGet.NextPage = template.HTML(fmt.Sprint(i + 1))
+			htmxGet.PreviousPage = template.HTML(fmt.Sprint(i - 1))
+		}
+		htmxGet.Pagination = append(htmxGet.Pagination, models.HTMXPagination{
+			Active:    template.HTML(active),
+			Link:      UserLink,
+			Page:      template.HTML(fmt.Sprint(i)),
+			QueryPage: htmxGet.QueryPage,
+		})
+		pageCount++
 	}
 
 	for _, user := range users {

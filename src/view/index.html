@@ -1,4 +1,6 @@
 <body data-new-gr-c-s-check-loaded="14.1147.0" data-gr-ext-installed="">
+  {{ $name := .SectionName }}
+  {{ $ignored := "Dashboard" }}
     
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/">Company name</a>
@@ -33,6 +35,7 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h2">{{ .SectionName }}</h1>
+            {{ if ne $name $ignored }}
             <div class="btn-toolbar mb-2 mb-md-0">
               <button hx-get="/{{ .Link }}-create-modal"  
               hx-trigger="click" 
@@ -41,15 +44,18 @@
               data-bs-target="#modals-here"
               type="button" class="btn btn-sm btn-outline-primary">Create</button>
             </div>
+            {{ end }}
           </div> 
           <div class="table-responsive">
+            {{ if ne $name $ignored }}
             <p>
               <button class="btn btn-outline-light btn-sm mb-2 mb-md-0 float-end" type="button" data-bs-toggle="collapse" data-bs-target="#filter-card" aria-expanded="true" aria-controls="filter-card">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="20" viewBox="0 0 22 20" id="filter"><g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><g stroke="#000" stroke-width="2" transform="translate(-1614 -1629)"><g transform="translate(1615 1630)"><path d="M20 0H0l8 9.46V16l4 2V9.46z"></path></g></g></g></svg>
               </button>
             </p>
             <div class="collapse show" id="filter-card">
-              <div class="card card-body">
+              <div class="card card-body mb-2">
+                <h1 class="h4">Filter</h1>
               <form id="filter-form" 
               hx-get="/{{ .Link }}-content" hx-target="#content" hx-headers='js:{"Authorization": localStorage.token}'
               class="row">
@@ -62,11 +68,11 @@
                 <div class="col-md-12">
                   <div class="col-md-6"></div>
                   <div class="col-md-6 float-end">
-                    <button type="submit" class="col-md-2 m-2 btn btn-outline-success btn-block float-end">
+                    <button type="submit" class="m-2 btn btn-outline-success btn-block float-end">
                       Filter
                     </button>
                     <button hx-get="/{{ .Link }}-content" hx-target="#content" hx-headers='js:{"Authorization": localStorage.token}'
-                    type="button" class="col-md-2 m-2 btn btn-outline-danger btn-block float-end">
+                    type="button" class="m-2 btn btn-outline-danger btn-block float-end">
                       Clear Filter
                     </button>
                   </div>
@@ -74,6 +80,7 @@
               </form>
             </div>
             </div>
+            {{ end }}
             <table class="table table-striped table-sm table-hover">
               <thead>
                 <tr>
@@ -110,6 +117,76 @@
                 {{ end }}
               </tbody>
             </table>
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
+            <div class="dropdown col-md-1">
+              <a class="btn btn-outline-dark dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ .Take }}
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><a class="dropdown-item" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryTake }}take=5" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'
+                  >5</a></li>
+                <li><a class="dropdown-item" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryTake }}take=10" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'
+                  >10</a></li>
+                <li><a class="dropdown-item" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryTake }}take=20" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'
+                  >20</a></li>
+                <li><a class="dropdown-item" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryTake }}take=30" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'
+                  >30</a></li>
+                <li><a class="dropdown-item" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryTake }}take=50" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'
+                  >50</a></li>
+                <li><a class="dropdown-item" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryTake }}take=100" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'
+                  >100</a></li>
+              </ul>
+            </div>
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                {{ if eq .IsFirst false }}
+                <li class="page-item"><a class="page-link" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryPage }}page=1" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+                </a></li>
+                  {{ end }}
+                {{ if eq .IsFirst false }}
+                <li class="page-item"><a class="page-link" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryPage }}page={{ .PreviousPage }}" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </a></li>
+                  {{ end }}
+                {{ range .Pagination }}
+                <li class="page-item {{ .Active }}"><a class="page-link" href="#" 
+                  hx-get="/{{ .Link }}-content?{{ .QueryPage }}page={{ .Page }}" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'>{{ .Page }}</a></li>
+                {{ end }}
+                {{ if eq .IsLast false }}
+                <li class="page-item"><a class="page-link" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryPage }}page={{ .NextPage }}" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </a></li>
+                  {{ end }}
+                {{ if eq .IsLast false }}
+                <li class="page-item"><a class="page-link" href="#"
+                  hx-get="/{{ .Link }}-content?{{ .QueryPage }}page={{ .LastPage }}" hx-target="#content" 
+                  hx-headers='js:{"Authorization": localStorage.token}'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 17l5-5-5-5M6 17l5-5-5-5"/></svg>
+                </a></li>
+                  {{ end }}
+              </ul>
+            </nav>
+            </div>
           </div>
           <div id="modals-here"
     class="modal modal-blur fade"
