@@ -172,9 +172,17 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 	htmxGet.Take = template.HTML(fmt.Sprint(filter.Take))
 	htmxGet.LastPage = template.HTML(fmt.Sprint(paginatedItems.PageCount))
 
+	totalNextPage := 0
+	for i := paginatedItems.PageIndex; i < paginatedItems.PageCount; i++ {
+		if totalNextPage > 1 {
+			break
+		}
+		totalNextPage++
+	}
+
 	pageCount := 0
 
-	for i := paginatedItems.PageIndex - 2; i <= paginatedItems.PageCount; i++ {
+	for i := paginatedItems.PageIndex - (4 - totalNextPage); i <= paginatedItems.PageCount; i++ {
 		if i < 1 {
 			continue
 		}
