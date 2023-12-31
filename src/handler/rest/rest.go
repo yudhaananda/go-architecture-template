@@ -58,8 +58,8 @@ func (h *rest) RegisterPath(router *gin.Engine) *gin.Engine {
 	api.POST("/register", h.Register)
 	userApi := api.Group("/user").Use(h.middleware.AuthMiddleware)
 	{
-		userApi.GET("/", h.GetUser)
-		userApi.POST("/", h.CreateUser)
+		userApi.GET("", h.GetUser)
+		userApi.POST("", h.CreateUser)
 		userApi.PUT("/:id", h.UpdateUser)
 		userApi.DELETE("/:id", h.DeleteUser)
 	}

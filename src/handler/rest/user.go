@@ -22,7 +22,7 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.Response
-// @Router /user/ [GET]
+// @Router /user [GET]
 func (h *rest) GetUser(ctx *gin.Context) {
 	var filter filter.Paging[filter.UserFilter]
 	filter.SetDefault()
@@ -57,7 +57,7 @@ func (h *rest) GetUser(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.Response
-// @Router /user/ [POST]
+// @Router /user [POST]
 func (h *rest) CreateUser(ctx *gin.Context) {
 	var input models.Query[models.UserInput]
 

@@ -36,26 +36,38 @@ func Init(params InitParam) Htmx {
 }
 
 func (h *htmx) RegisterPath(router *gin.Engine) *gin.Engine {
-	router.GET("/login", h.Login)
-	router.POST("/login", h.LoginValidate)
-	router.GET("/register", h.Register)
-	router.POST("/register", h.RegisterValidate)
-	router.GET("/", h.GetDashboard)
-	router.GET("/dashboard-content", h.middleware.AuthMiddleware, h.DashboardContent)
-	router.GET("/user", h.GetUser)
-	router.GET("/user-content", h.middleware.AuthMiddleware, h.UserContent)
-	router.DELETE("/user/:id", h.middleware.AuthMiddleware, h.DeleteUser)
-	router.GET("/user-edit-modal/:id", h.ModalEditUser)
-	router.GET("/user-create-modal", h.ModalCreateUser)
-	router.PUT("/user/:id", h.middleware.AuthMiddleware, h.EditUser)
-	router.POST("/user", h.middleware.AuthMiddleware, h.CreateUser)
-	router.GET("/dashboard.css", func(ctx *gin.Context) {
-		css, err := os.ReadFile(h.Path() + "view/index.css")
-		if err != nil {
-			ctx.Data(http.StatusBadGateway, "text/html; charset=utf-8", []byte(err.Error()))
-		}
-		ctx.Data(http.StatusOK, "text/css", css)
-	})
+	login := router.Group("/login")
+	{
+		login.GET("", h.Login)
+		login.POST("", h.LoginValidate)
+	}
+	register := router.Group("/register")
+	{
+		register.GET("", h.Register)
+		register.POST("", h.RegisterValidate)
+	}
+	dashboard := router.Group("")
+	{
+		dashboard.GET("", h.GetDashboard)
+		dashboard.GET("dashboard/content", h.middleware.AuthMiddleware, h.DashboardContent)
+		dashboard.GET("/dashboard.css", func(ctx *gin.Context) {
+			css, err := os.ReadFile(h.Path() + "view/index.css")
+			if err != nil {
+				ctx.Data(http.StatusBadGateway, "text/html; charset=utf-8", []byte(err.Error()))
+			}
+			ctx.Data(http.StatusOK, "text/css", css)
+		})
+	}
+	user := router.Group("/user")
+	{
+		user.GET("", h.GetUser)
+		user.GET("/content", h.middleware.AuthMiddleware, h.UserContent)
+		user.DELETE("/:id", h.middleware.AuthMiddleware, h.DeleteUser)
+		user.GET("/edit-modal/:id", h.ModalEditUser)
+		user.GET("/create-modal", h.ModalCreateUser)
+		user.PUT("/:id", h.middleware.AuthMiddleware, h.EditUser)
+		user.POST("", h.middleware.AuthMiddleware, h.CreateUser)
+	}
 
 	return router
 }
