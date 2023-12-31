@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"html/template"
 	"reflect"
 	"strings"
 	"time"
@@ -122,92 +121,4 @@ func APIResponse(message string, code int, status string, data interface{}, erro
 		Errors: errors,
 	}
 	return jsonResponse
-}
-
-type HTMX[T comparable] struct {
-	Model T
-}
-
-func (m HTMX[T]) GenerateHTML(html string) (result HTMXResult) {
-	ref := reflect.ValueOf(m.Model)
-	tpe := ref.Type()
-
-	// Adding where statement
-	for i := 0; i < tpe.NumField(); i++ {
-		form := tpe.Field(i).Tag.Get("form")
-		name := tpe.Field(i).Tag.Get("name")
-		memberType := tpe.Field(i).Tag.Get("type")
-		result.Members = append(result.Members, MemberStruct{
-			Member: template.HTML(fmt.Sprintf(html, memberType, form, form, form, name)),
-		})
-	}
-	return
-}
-
-type HTMXResult struct {
-	Members []MemberStruct
-}
-
-type MemberStruct struct {
-	Member template.HTML
-}
-
-type HTMXGet struct {
-	Header       []MemberStruct
-	Column       []Column
-	SideBar      []SideBar
-	Link         template.HTML
-	SectionName  template.HTML
-	Filter       []HTMXFilter
-	Pagination   []HTMXPagination
-	IsFirst      bool
-	IsLast       bool
-	PreviousPage template.HTML
-	NextPage     template.HTML
-	LastPage     template.HTML
-	Take         template.HTML
-	QueryPage    template.HTML
-	QueryTake    template.HTML
-}
-
-type HTMXPagination struct {
-	Active    template.HTML
-	Link      template.HTML
-	Page      template.HTML
-	QueryPage template.HTML
-}
-
-type HTMXFilter struct {
-	Type  template.HTML
-	Id    template.HTML
-	Label template.HTML
-	Value template.HTML
-}
-
-type SideBar struct {
-	Active template.HTML
-	Name   template.HTML
-	Link   template.HTML
-}
-
-type Column struct {
-	Row  []MemberStruct
-	Id   template.HTML
-	Name template.HTML
-}
-
-type Modal struct {
-	Name    template.HTML
-	Link    template.HTML
-	Id      template.HTML
-	Method  template.HTML
-	Members []ModalMember
-}
-
-type ModalMember struct {
-	Type        template.HTML
-	Id          template.HTML
-	Name        template.HTML
-	Value       template.HTML
-	Placeholder template.HTML
 }

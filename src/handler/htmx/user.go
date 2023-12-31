@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"template/src/filter"
 	"template/src/formatter"
 	"template/src/models"
@@ -40,7 +41,7 @@ func (h *htmx) DeleteUser(ctx *gin.Context) {
 }
 
 func (h *htmx) ModalCreateUser(ctx *gin.Context) {
-	user := models.User{}
+	user := models.HTMX[models.User]{}
 	modal := models.Modal{
 		Name:   template.HTML("Create " + User),
 		Link:   template.HTML(UserLink),
@@ -66,13 +67,16 @@ func (h *htmx) ModalEditUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
+	htmxUsers := models.HTMX[models.User]{
+		Model: users[0],
+	}
 	modal := models.Modal{
 		Name:   template.HTML("Edit " + User),
 		Link:   template.HTML(UserLink),
 		Id:     template.HTML(fmt.Sprint(id)),
 		Method: "put",
 	}
-	modal.Members = users[0].ToModalMember()
+	modal.Members = htmxUsers.ToModalMember()
 	tmpl := template.Must(template.ParseFiles(h.Path() + "view/modal.html"))
 	tmpl.Execute(ctx.Writer, modal)
 }
@@ -121,7 +125,7 @@ func (h *htmx) EditUser(ctx *gin.Context) {
 }
 
 func (h *htmx) UserContent(ctx *gin.Context) {
-	user := models.User{}
+	user := models.HTMX[models.User]{}
 	var filter filter.Paging[filter.UserFilter]
 	filter.SetDefault()
 	if err := h.BindParams(ctx, &filter); err != nil {
@@ -205,7 +209,10 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 	}
 
 	for _, user := range users {
-		htmxGet.Column = append(htmxGet.Column, user.ToColumn())
+		userHtmx := models.HTMX[models.User]{
+			Model: user,
+		}
+		htmxGet.Column = append(htmxGet.Column, userHtmx.ToColumn(strings.ToLower(User)))
 	}
 	tmpl := template.Must(template.ParseFiles(h.Path() + "view/index.html"))
 	tmpl.Execute(ctx.Writer, htmxGet)
