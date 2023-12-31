@@ -1,4 +1,4 @@
-package handler
+package rest
 
 import (
 	"net/http"
@@ -22,8 +22,8 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.Response
-// @Router /user/ [GET]
-func (h *handler) GetUser(ctx *gin.Context) {
+// @Router /user [GET]
+func (h *rest) GetUser(ctx *gin.Context) {
 	var filter filter.Paging[filter.UserFilter]
 	filter.SetDefault()
 
@@ -57,8 +57,8 @@ func (h *handler) GetUser(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.Response
-// @Router /user/ [POST]
-func (h *handler) CreateUser(ctx *gin.Context) {
+// @Router /user [POST]
+func (h *rest) CreateUser(ctx *gin.Context) {
 	var input models.Query[models.UserInput]
 
 	if err := ctx.ShouldBindJSON(&input.Model); err != nil {
@@ -90,7 +90,7 @@ func (h *handler) CreateUser(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} models.Response
 // @Router /user/{id} [PUT]
-func (h *handler) UpdateUser(ctx *gin.Context) {
+func (h *rest) UpdateUser(ctx *gin.Context) {
 	var input models.Query[models.UserInput]
 
 	if err := ctx.ShouldBindJSON(&input.Model); err != nil {
@@ -128,7 +128,7 @@ func (h *handler) UpdateUser(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} models.Response
 // @Router /user/{id} [DELETE]
-func (h *handler) DeleteUser(ctx *gin.Context) {
+func (h *rest) DeleteUser(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		response := models.APIResponse("Delete User Failed", http.StatusUnprocessableEntity, "Failed", nil, err.Error())

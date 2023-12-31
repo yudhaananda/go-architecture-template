@@ -16,7 +16,7 @@ type Paging[T comparable] struct {
 
 func (f *Paging[T]) SetDefault() {
 	f.Page = 1
-	f.Take = -1
+	f.Take = 10
 }
 
 func (f *Paging[T]) QueryBuilder() string {

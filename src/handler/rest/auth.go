@@ -1,4 +1,4 @@
-package handler
+package rest
 
 import (
 	"net/http"
@@ -19,10 +19,10 @@ import (
 // @Produce json
 // @Success 200 {object} models.Response
 // @Router /register [post]
-func (h *handler) Register(ctx *gin.Context) {
+func (h *rest) Register(ctx *gin.Context) {
 	var input models.Query[models.UserInput]
 
-	err := ctx.ShouldBindJSON(&input.Model)
+	err := ctx.ShouldBindJSON(&input)
 	if err != nil {
 		response := models.APIResponse("Register Failed", http.StatusUnprocessableEntity, "Failed", nil, err.Error())
 		ctx.JSON(http.StatusUnprocessableEntity, response)
@@ -52,11 +52,10 @@ func (h *handler) Register(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} models.Response
 // @Router /login [post]
-func (h *handler) Login(ctx *gin.Context) {
+func (h *rest) Login(ctx *gin.Context) {
 	var input models.Login
 
 	err := ctx.ShouldBindJSON(&input)
-
 	if err != nil {
 		response := models.APIResponse("Login Failed", http.StatusUnprocessableEntity, "Failed", nil, err.Error())
 		ctx.JSON(http.StatusUnprocessableEntity, response)
