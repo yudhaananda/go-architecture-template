@@ -135,7 +135,7 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 	htmxGet := user.ToHeader()
 	htmxGet.SectionName = User
 	htmxGet.Link = UserLink
-	htmxGet.Filter = filter.Filter.ToHTMXFilter()
+	htmxGet.Filter, htmxGet.DateJQuery = filter.Filter.ToHTMXFilter()
 	for key, values := range ctx.Request.URL.Query() {
 		if key == "page" {
 			continue

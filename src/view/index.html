@@ -209,9 +209,11 @@
         localStorage.clear();
         window.location.href="/login";
       }
+      {{ range .DateJQuery }}
       $(function () {
-    date = $('#birthdate-filter').datepicker({
-      format:"yyyy-mm-ddT00:00:00Z"
-    });
-  });
+        date = $('#{{ .Value }}-filter').datepicker({
+          format:"yyyy-mm-ddT00:00:00Z"
+        });
+      });
+      {{ end }}
     </script>

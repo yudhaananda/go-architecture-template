@@ -62,11 +62,13 @@
 </html>
 
 <script type="text/javascript">
-  $(function () {
-    date = $('#birthdate').datepicker({
-      format:"yyyy-mm-ddT00:00:00Z"
-    });
-  });
+  {{ range .DateJQuery }}
+      $(function () {
+        date = $('#{{ .Value }}').datepicker({
+          format:"yyyy-mm-ddT00:00:00Z"
+        });
+      });
+  {{ end }}
   document.addEventListener('htmx:afterSwap', function(event) {   
     window.location.href = '/login';
   });

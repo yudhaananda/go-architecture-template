@@ -16,10 +16,13 @@ type UserFilter struct {
 	Age       int       `db:"age" json:"age" form:"age" type:"number" name:"Age"`
 }
 
-func (m UserFilter) ToHTMXFilter() (result []models.HTMXFilter) {
+func (m UserFilter) ToHTMXFilter() (result []models.HTMXFilter, dateFilter []models.DateJQuery) {
 	ref := reflect.ValueOf(m)
 	tpe := ref.Type()
 	for i := 0; i < tpe.NumField(); i++ {
+		if ref.Field(i).CanConvert(reflect.ValueOf(time.Time{}).Type()) {
+			dateFilter = append(dateFilter, models.DateJQuery{Value: tpe.Field(i).Tag.Get("form")})
+		}
 		value := template.HTML(fmt.Sprint(ref.Field(i).Interface()))
 		if isEmpty(fmt.Sprint(ref.Field(i).Interface())) {
 			value = ""

@@ -19,6 +19,9 @@ func (m HTMX[T]) GenerateHTML(html string) (result HTMXResult) {
 
 	// Adding where statement
 	for i := 0; i < tpe.NumField(); i++ {
+		if ref.Field(i).CanConvert(reflect.ValueOf(time.Time{}).Type()) {
+			result.DateJQuery = append(result.DateJQuery, DateJQuery{Value: tpe.Field(i).Tag.Get("form")})
+		}
 		form := tpe.Field(i).Tag.Get("form")
 		name := tpe.Field(i).Tag.Get("name")
 		memberType := tpe.Field(i).Tag.Get("type")
@@ -161,7 +164,8 @@ func (m HTMX[T]) ToModalMember() (result []ModalMember) {
 }
 
 type HTMXResult struct {
-	Members []MemberStruct
+	Members    []MemberStruct
+	DateJQuery []DateJQuery
 }
 
 type MemberStruct struct {
@@ -174,6 +178,7 @@ type HTMXGet struct {
 	SideBar      []SideBar
 	Link         template.HTML
 	SectionName  template.HTML
+	DateJQuery   []DateJQuery
 	Filter       []HTMXFilter
 	Pagination   []HTMXPagination
 	IsFirst      bool
@@ -184,6 +189,10 @@ type HTMXGet struct {
 	Take         template.HTML
 	QueryPage    template.HTML
 	QueryTake    template.HTML
+}
+
+type DateJQuery struct {
+	Value string
 }
 
 type HTMXPagination struct {
