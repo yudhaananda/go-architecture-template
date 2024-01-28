@@ -20,14 +20,14 @@ const (
 func (h *htmx) Login(ctx *gin.Context) {
 	models := models.HTMX[models.Login]{}
 	member := models.GenerateHTML(LoginMember)
-	tmpl := template.Must(template.ParseFiles(h.Path() + "view/login.html"))
+	tmpl := template.Must(template.ParseFiles("./src/view/login.html"))
 	tmpl.Execute(ctx.Writer, member)
 }
 
 func (h *htmx) Register(ctx *gin.Context) {
 	models := models.HTMX[models.Register]{}
 	member := models.GenerateHTML(LoginMember)
-	tmpl := template.Must(template.ParseFiles(h.Path() + "view/register.html"))
+	tmpl := template.Must(template.ParseFiles("./src/view/register.html"))
 	tmpl.Execute(ctx.Writer, member)
 }
 

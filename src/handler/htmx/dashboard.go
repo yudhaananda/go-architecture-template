@@ -15,7 +15,7 @@ const (
 func (h *htmx) GetDashboard(ctx *gin.Context) {
 	name := make(map[string]string)
 	name["Name"] = strings.ToLower(Dashboard)
-	tmpl := template.Must(template.ParseFiles(h.Path() + "view/middleware.html"))
+	tmpl := template.Must(template.ParseFiles("./src/view/middleware.html"))
 	tmpl.Execute(ctx.Writer, name)
 }
 
@@ -33,6 +33,6 @@ func (h *htmx) DashboardContent(ctx *gin.Context) {
 		}
 		htmxGet.SideBar = append(htmxGet.SideBar, temp)
 	}
-	tmpl := template.Must(template.ParseFiles(h.Path() + "view/index.html"))
+	tmpl := template.Must(template.ParseFiles("./src/view/index.html"))
 	tmpl.Execute(ctx.Writer, htmxGet)
 }

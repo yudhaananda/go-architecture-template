@@ -22,7 +22,7 @@ const (
 func (h *htmx) GetUser(ctx *gin.Context) {
 	name := make(map[string]string)
 	name["Name"] = UserLink
-	tmpl := template.Must(template.ParseFiles(h.Path() + "view/middleware.html"))
+	tmpl := template.Must(template.ParseFiles("./src/view/middleware.html"))
 	tmpl.Execute(ctx.Writer, name)
 }
 
@@ -48,7 +48,7 @@ func (h *htmx) ModalCreateUser(ctx *gin.Context) {
 		Method: "post",
 	}
 	modal.Members = user.ToModalMember()
-	tmpl := template.Must(template.ParseFiles(h.Path() + "view/modal.html"))
+	tmpl := template.Must(template.ParseFiles("./src/view/modal.html"))
 	tmpl.Execute(ctx.Writer, modal)
 }
 
@@ -77,7 +77,7 @@ func (h *htmx) ModalEditUser(ctx *gin.Context) {
 		Method: "put",
 	}
 	modal.Members = htmxUsers.ToModalMember()
-	tmpl := template.Must(template.ParseFiles(h.Path() + "view/modal.html"))
+	tmpl := template.Must(template.ParseFiles("./src/view/modal.html"))
 	tmpl.Execute(ctx.Writer, modal)
 }
 
@@ -214,6 +214,6 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 		}
 		htmxGet.Column = append(htmxGet.Column, userHtmx.ToColumn(strings.ToLower(User)))
 	}
-	tmpl := template.Must(template.ParseFiles(h.Path() + "view/index.html"))
+	tmpl := template.Must(template.ParseFiles("./src/view/index.html"))
 	tmpl.Execute(ctx.Writer, htmxGet)
 }
