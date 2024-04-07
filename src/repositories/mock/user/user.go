@@ -7,6 +7,8 @@ import (
 	"template/src/models"
 
 	"github.com/golang/mock/gomock"
+	"github.com/yudhaananda/go-common/db/sql"
+	"github.com/yudhaananda/go-common/paging"
 )
 
 type MockInterface struct {
@@ -28,19 +30,19 @@ func (m *MockInterface) EXPECT() *MockInterfaceMockRecorder {
 	return m.recorder
 }
 
-func (m *MockInterface) Create(ctx context.Context, input models.Query[models.UserInput]) error {
+func (m *MockInterface) Create(ctx context.Context, input models.UserInput, trx *sql.Tx) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", ctx, input)
+	ret := m.ctrl.Call(m, "Create", ctx, input, trx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-func (mr *MockInterfaceMockRecorder) Create(ctx, input interface{}) *gomock.Call {
+func (mr *MockInterfaceMockRecorder) Create(ctx, input, trx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockInterface)(nil).Create), ctx, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockInterface)(nil).Create), ctx, input, trx)
 }
 
-func (m *MockInterface) Get(ctx context.Context, paging filter.Paging[filter.UserFilter]) ([]models.User, int, error) {
+func (m *MockInterface) Get(ctx context.Context, paging paging.Paging[filter.UserFilter]) ([]models.User, int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", ctx, paging)
 	ret0, _ := ret[0].([]models.User)
@@ -54,14 +56,14 @@ func (mr *MockInterfaceMockRecorder) Get(ctx, paging interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockInterface)(nil).Get), ctx, paging)
 }
 
-func (m *MockInterface) Update(ctx context.Context, input models.Query[models.UserInput], id int) error {
+func (m *MockInterface) Update(ctx context.Context, input models.UserInput, id int, trx *sql.Tx) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, input, id)
+	ret := m.ctrl.Call(m, "Update", ctx, input, id, trx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-func (mr *MockInterfaceMockRecorder) Update(ctx, input, id interface{}) *gomock.Call {
+func (mr *MockInterfaceMockRecorder) Update(ctx, input, id, trx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockInterface)(nil).Update), ctx, input, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockInterface)(nil).Update), ctx, input, id, trx)
 }

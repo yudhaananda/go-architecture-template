@@ -5,6 +5,8 @@ import (
 	"template/src/filter"
 	"template/src/models"
 	"template/src/repositories/base"
+
+	sql_db "github.com/yudhaananda/go-common/db/sql"
 )
 
 type Interface interface {
@@ -22,7 +24,9 @@ type Param struct {
 func Init(param Param) Interface {
 	return &userRepository{
 		BaseRepository: base.BaseRepository[models.UserInput, models.User, filter.UserFilter]{
-			Db:        param.Db,
+			Db: &sql_db.DBSql[models.User]{
+				DB: param.Db,
+			},
 			TableName: param.TableName,
 		},
 	}

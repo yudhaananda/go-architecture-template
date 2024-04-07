@@ -2,112 +2,64 @@ package base
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
-	"reflect"
-	"template/src/filter"
-	"template/src/models"
+
+	"github.com/yudhaananda/go-common/db/sql"
+	"github.com/yudhaananda/go-common/paging"
+	querybuilder "github.com/yudhaananda/go-common/query_builder"
 )
 
 type BaseInterface[T, M, F comparable] interface {
-	Get(ctx context.Context, paging filter.Paging[F]) ([]M, int, error)
-	Create(ctx context.Context, input models.Query[T]) error
-	Update(ctx context.Context, input models.Query[T], id int) error
+	Get(ctx context.Context, paging paging.Paging[F]) ([]M, int, error)
+	Create(ctx context.Context, input T, trx *sql.Tx) error
+	Update(ctx context.Context, input T, id int, trx *sql.Tx) error
 }
 
 type BaseRepository[T, M, F comparable] struct {
-	Db        *sql.DB
+	Db        *sql.DBSql[M]
 	TableName string
 }
 
-func (r *BaseRepository[T, M, F]) Update(ctx context.Context, input models.Query[T], id int) error {
-	tx, err := r.Db.Begin()
-	if err != nil {
-		return err
-	}
+func (r *BaseRepository[T, M, F]) Update(ctx context.Context, input T, id int, trx *sql.Tx) error {
+	updateQuery, args := querybuilder.BuildUpdateQuery(id, input)
 
-	updateQuery := input.BuildUpdateQuery(id)
-
-	if _, err = tx.ExecContext(ctx, Update+r.TableName+updateQuery); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err = tx.Commit(); err != nil {
-		tx.Rollback()
+	if err := r.Db.ExecContext(ctx, Update+r.TableName+updateQuery, trx, args...); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *BaseRepository[T, M, F]) Create(ctx context.Context, input models.Query[T]) error {
-	tx, err := r.Db.Begin()
-	if err != nil {
-		return err
-	}
+func (r *BaseRepository[T, M, F]) Create(ctx context.Context, input T, trx *sql.Tx) error {
+	createQuery, args := querybuilder.BuildCreateQuery(input)
 
-	createQuery := input.BuildCreateQuery()
-
-	if _, err = tx.ExecContext(ctx, Create+r.TableName+createQuery); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err = tx.Commit(); err != nil {
-		tx.Rollback()
+	if err := r.Db.ExecContext(ctx, Create+r.TableName+createQuery, trx, args...); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *BaseRepository[T, M, F]) Get(ctx context.Context, paging filter.Paging[F]) ([]M, int, error) {
+func (r *BaseRepository[T, M, F]) Get(ctx context.Context, paging paging.Paging[F]) ([]M, int, error) {
 
 	var (
-		where      = paging.QueryBuilder()
-		pagination = paging.PaginationQuery()
-		tempModels = models.Query[M]{}
-		member     = tempModels.BuildTableMember()
-		query      = fmt.Sprintf(Select, member)
-		models     = []M{}
-		count      int
+		where, countArgs = paging.QueryBuilder()
+		pagination, args = paging.PaginationQuery(countArgs)
+		tempModels       M
+		member           = querybuilder.BuildTableMember(tempModels)
+		query            = fmt.Sprintf(Select, member)
+		models           = []M{}
+		count            int
 	)
 
-	rowCount, err := r.Db.QueryContext(ctx, Count+r.TableName+where)
-	if err != nil {
-		return models, 0, err
-	}
-
-	defer rowCount.Close()
-	for rowCount.Next() {
-		err = rowCount.Scan(&count)
-		if err != nil {
-			return models, count, err
-		}
-	}
-	row, err := r.Db.QueryContext(ctx, query+r.TableName+where+pagination)
+	err := r.Db.CountContext(ctx, &count, Count+r.TableName+where, countArgs...)
 	if err != nil {
 		return models, count, err
 	}
 
-	defer row.Close()
-	for row.Next() {
-		var model M
-
-		s := reflect.ValueOf(&model).Elem()
-		numCols := s.NumField()
-		columns := make([]interface{}, numCols)
-		for i := 0; i < numCols; i++ {
-			field := s.Field(i)
-			columns[i] = field.Addr().Interface()
-		}
-
-		err := row.Scan(columns...)
-		if err != nil {
-			return models, count, err
-		}
-		models = append(models, model)
+	models, err = r.Db.GetContext(ctx, query+r.TableName+where+pagination, args...)
+	if err != nil {
+		return models, count, err
 	}
 
 	return models, count, nil

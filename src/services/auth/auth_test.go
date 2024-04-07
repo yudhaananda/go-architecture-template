@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/yudhaananda/go-common/paging"
 )
 
 func Test_authService_Register(t *testing.T) {
@@ -35,7 +36,7 @@ func Test_authService_Register(t *testing.T) {
 	}
 	service := auth.Init(params)
 	type args struct {
-		Input models.Query[models.UserInput]
+		Input models.UserInput
 	}
 
 	restoreAll := func() {
@@ -52,9 +53,7 @@ func Test_authService_Register(t *testing.T) {
 		{
 			name: "get user error",
 			args: args{
-				Input: models.Query[models.UserInput]{
-					Model: models.UserInput{},
-				},
+				Input: models.UserInput{},
 			},
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Get(context.Background(), gomock.Any()).Return([]models.User{}, 0, assert.AnError)
@@ -64,9 +63,7 @@ func Test_authService_Register(t *testing.T) {
 		{
 			name: "get user",
 			args: args{
-				Input: models.Query[models.UserInput]{
-					Model: models.UserInput{},
-				},
+				Input: models.UserInput{},
 			},
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Get(context.Background(), gomock.Any()).Return([]models.User{
@@ -78,12 +75,10 @@ func Test_authService_Register(t *testing.T) {
 		{
 			name: "hash password error",
 			args: args{
-				Input: models.Query[models.UserInput]{
-					Model: models.UserInput{},
-				},
+				Input: models.UserInput{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context.Background(), filter.Paging[filter.UserFilter]{
+				mock.user.EXPECT().Get(context.Background(), paging.Paging[filter.UserFilter]{
 					Page:   1,
 					Take:   1,
 					Filter: filter.UserFilter{},
@@ -95,34 +90,28 @@ func Test_authService_Register(t *testing.T) {
 		{
 			name: "create user error",
 			args: args{
-				Input: models.Query[models.UserInput]{
-					Model: models.UserInput{},
-				},
+				Input: models.UserInput{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context.Background(), filter.Paging[filter.UserFilter]{
+				mock.user.EXPECT().Get(context.Background(), paging.Paging[filter.UserFilter]{
 					Page:   1,
 					Take:   1,
 					Filter: filter.UserFilter{},
 				}).Return([]models.User{}, 0, nil)
 				mock.auth.EXPECT().HashPassword([]byte("")).Return("password", nil)
-				mock.user.EXPECT().Create(context.Background(), models.Query[models.UserInput]{
-					Model: models.UserInput{
-						Password: "password",
-					},
-				}).Return(assert.AnError)
+				mock.user.EXPECT().Create(context.Background(), models.UserInput{
+					Password: "password",
+				}, nil).Return(assert.AnError)
 			},
 			wantErr: true,
 		},
 		{
 			name: "register user success",
 			args: args{
-				models.Query[models.UserInput]{
-					Model: models.UserInput{},
-				},
+				models.UserInput{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context.Background(), filter.Paging[filter.UserFilter]{
+				mock.user.EXPECT().Get(context.Background(), paging.Paging[filter.UserFilter]{
 					Page: 1,
 					Take: 1,
 					Filter: filter.UserFilter{
@@ -130,11 +119,9 @@ func Test_authService_Register(t *testing.T) {
 					},
 				}).Return([]models.User{}, 0, nil)
 				mock.auth.EXPECT().HashPassword([]byte("")).Return("password", nil)
-				mock.user.EXPECT().Create(context.Background(), models.Query[models.UserInput]{
-					Model: models.UserInput{
-						Password: "password",
-					},
-				}).Return(nil)
+				mock.user.EXPECT().Create(context.Background(), models.UserInput{
+					Password: "password",
+				}, nil).Return(nil)
 			},
 		},
 	}
@@ -215,7 +202,7 @@ func Test_authService_Login(t *testing.T) {
 				Input: models.Login{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context.Background(), filter.Paging[filter.UserFilter]{
+				mock.user.EXPECT().Get(context.Background(), paging.Paging[filter.UserFilter]{
 					Page:   1,
 					Take:   1,
 					Filter: filter.UserFilter{},
@@ -233,7 +220,7 @@ func Test_authService_Login(t *testing.T) {
 				Input: models.Login{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context.Background(), filter.Paging[filter.UserFilter]{
+				mock.user.EXPECT().Get(context.Background(), paging.Paging[filter.UserFilter]{
 					Page:   1,
 					Take:   1,
 					Filter: filter.UserFilter{},
@@ -255,7 +242,7 @@ func Test_authService_Login(t *testing.T) {
 				Input: models.Login{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context.Background(), filter.Paging[filter.UserFilter]{
+				mock.user.EXPECT().Get(context.Background(), paging.Paging[filter.UserFilter]{
 					Page:   1,
 					Take:   1,
 					Filter: filter.UserFilter{},

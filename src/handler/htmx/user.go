@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/yudhaananda/go-common/paging"
 )
 
 const (
@@ -58,7 +59,7 @@ func (h *htmx) ModalEditUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
-	users, _, err := h.service.User.Get(ctx, filter.Paging[filter.UserFilter]{
+	users, _, err := h.service.User.Get(ctx, paging.Paging[filter.UserFilter]{
 		Filter: filter.UserFilter{
 			Id: id,
 		},
@@ -89,9 +90,7 @@ func (h *htmx) CreateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err = h.service.User.Create(ctx, models.Query[models.UserInput]{
-		Model: input,
-	})
+	err = h.service.User.Create(ctx, input)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err)
 		return
@@ -113,9 +112,7 @@ func (h *htmx) EditUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err = h.service.User.Update(ctx, models.Query[models.UserInput]{
-		Model: input,
-	}, id)
+	err = h.service.User.Update(ctx, input, id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err)
 		return
@@ -126,7 +123,7 @@ func (h *htmx) EditUser(ctx *gin.Context) {
 
 func (h *htmx) UserContent(ctx *gin.Context) {
 	user := models.HTMX[models.User]{}
-	var filter filter.Paging[filter.UserFilter]
+	var filter paging.Paging[filter.UserFilter]
 	filter.SetDefault()
 	if err := h.BindParams(ctx, &filter); err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)

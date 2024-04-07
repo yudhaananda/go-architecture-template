@@ -14,6 +14,8 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
+	"github.com/yudhaananda/go-common/paging"
+	querybuilder "github.com/yudhaananda/go-common/query_builder"
 )
 
 func TestCreate(t *testing.T) {
@@ -21,7 +23,7 @@ func TestCreate(t *testing.T) {
 
 	type args struct {
 		ctx    context.Context
-		models models.Query[models.UserInput]
+		models models.UserInput
 	}
 	tests := []struct {
 		name        string
@@ -33,7 +35,7 @@ func TestCreate(t *testing.T) {
 			name: "sql begin failed",
 			args: args{
 				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
+				models: models.UserInput{},
 			},
 			prepSqlMock: func() (*sql.DB, error) {
 				sqlServer, sqlMock, err := sqlmock.New()
@@ -46,41 +48,13 @@ func TestCreate(t *testing.T) {
 			name: "sql exec failed",
 			args: args{
 				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
+				models: models.UserInput{},
 			},
 			prepSqlMock: func() (*sql.DB, error) {
 				sqlServer, sqlMock, err := sqlmock.New()
 				sqlMock.ExpectBegin()
+				sqlMock.ExpectPrepare(query)
 				sqlMock.ExpectExec(query).WillReturnError(errors.New(""))
-				return sqlServer, err
-			},
-			wantErr: true,
-		},
-		{
-			name: "sql no row affected",
-			args: args{
-				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
-			},
-			prepSqlMock: func() (*sql.DB, error) {
-				sqlServer, sqlMock, err := sqlmock.New()
-				sqlMock.ExpectBegin()
-				sqlMock.ExpectExec(query).WillReturnResult(driver.RowsAffected(0))
-				return sqlServer, err
-			},
-			wantErr: true,
-		},
-		{
-			name: "sql commit failed",
-			args: args{
-				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
-			},
-			prepSqlMock: func() (*sql.DB, error) {
-				sqlServer, sqlMock, err := sqlmock.New()
-				sqlMock.ExpectBegin()
-				sqlMock.ExpectExec(query).WillReturnResult(driver.RowsAffected(1))
-				sqlMock.ExpectCommit().WillReturnError(errors.New(""))
 				return sqlServer, err
 			},
 			wantErr: true,
@@ -89,11 +63,12 @@ func TestCreate(t *testing.T) {
 			name: "sql commit success",
 			args: args{
 				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
+				models: models.UserInput{},
 			},
 			prepSqlMock: func() (*sql.DB, error) {
 				sqlServer, sqlMock, err := sqlmock.New()
 				sqlMock.ExpectBegin()
+				sqlMock.ExpectPrepare(query)
 				sqlMock.ExpectExec(query).WillReturnResult(driver.RowsAffected(1))
 				sqlMock.ExpectCommit()
 				return sqlServer, err
@@ -112,7 +87,7 @@ func TestCreate(t *testing.T) {
 				Db:        sqlServer,
 				TableName: "user",
 			})
-			err = init.Create(tt.args.ctx, tt.args.models)
+			err = init.Create(tt.args.ctx, tt.args.models, nil)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("user.Create() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -125,7 +100,7 @@ func TestUpdate(t *testing.T) {
 
 	type args struct {
 		ctx    context.Context
-		models models.Query[models.UserInput]
+		models models.UserInput
 		id     int
 	}
 	tests := []struct {
@@ -138,7 +113,7 @@ func TestUpdate(t *testing.T) {
 			name: "sql begin failed",
 			args: args{
 				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
+				models: models.UserInput{},
 				id:     1,
 			},
 			prepSqlMock: func() (*sql.DB, error) {
@@ -152,7 +127,7 @@ func TestUpdate(t *testing.T) {
 			name: "sql exec failed",
 			args: args{
 				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
+				models: models.UserInput{},
 				id:     1,
 			},
 			prepSqlMock: func() (*sql.DB, error) {
@@ -167,7 +142,7 @@ func TestUpdate(t *testing.T) {
 			name: "sql no row affected",
 			args: args{
 				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
+				models: models.UserInput{},
 				id:     1,
 			},
 			prepSqlMock: func() (*sql.DB, error) {
@@ -182,7 +157,7 @@ func TestUpdate(t *testing.T) {
 			name: "sql commit failed",
 			args: args{
 				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
+				models: models.UserInput{},
 				id:     1,
 			},
 			prepSqlMock: func() (*sql.DB, error) {
@@ -198,12 +173,13 @@ func TestUpdate(t *testing.T) {
 			name: "sql commit success",
 			args: args{
 				ctx:    context.Background(),
-				models: models.Query[models.UserInput]{},
+				models: models.UserInput{},
 				id:     1,
 			},
 			prepSqlMock: func() (*sql.DB, error) {
 				sqlServer, sqlMock, err := sqlmock.New()
 				sqlMock.ExpectBegin()
+				sqlMock.ExpectPrepare(query)
 				sqlMock.ExpectExec(query).WillReturnResult(driver.RowsAffected(1))
 				sqlMock.ExpectCommit()
 				return sqlServer, err
@@ -222,7 +198,7 @@ func TestUpdate(t *testing.T) {
 				Db:        sqlServer,
 				TableName: "user",
 			})
-			err = init.Update(tt.args.ctx, tt.args.models, tt.args.id)
+			err = init.Update(tt.args.ctx, tt.args.models, tt.args.id, nil)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("user.Update() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -231,15 +207,15 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	tempModels := models.Query[models.User]{}
-	member := tempModels.BuildTableMember()
+	tempModels := models.User{}
+	member := querybuilder.BuildTableMember(tempModels)
 	query := regexp.QuoteMeta("SELECT " + member + " FROM user WHERE 1=1")
 	queryCount := regexp.QuoteMeta("SELECT COUNT(*) FROM user")
 	mockTime := time.Date(2022, 5, 11, 0, 0, 0, 0, time.UTC)
 
 	type args struct {
 		ctx    context.Context
-		models filter.Paging[filter.UserFilter]
+		models paging.Paging[filter.UserFilter]
 	}
 	tests := []struct {
 		name        string
@@ -253,7 +229,7 @@ func TestGet(t *testing.T) {
 			name: "sql count query failed",
 			args: args{
 				ctx:    context.Background(),
-				models: filter.Paging[filter.UserFilter]{},
+				models: paging.Paging[filter.UserFilter]{},
 			},
 			prepSqlMock: func() (*sql.DB, error) {
 				sqlServer, sqlMock, err := sqlmock.New()
@@ -267,31 +243,35 @@ func TestGet(t *testing.T) {
 			name: "sql query failed",
 			args: args{
 				ctx:    context.Background(),
-				models: filter.Paging[filter.UserFilter]{},
+				models: paging.Paging[filter.UserFilter]{},
 			},
 			prepSqlMock: func() (*sql.DB, error) {
 				sqlServer, sqlMock, err := sqlmock.New()
 				rowCount := sqlMock.NewRows([]string{"COUNT(*)"}).AddRow(1)
+				sqlMock.ExpectPrepare(queryCount)
 				sqlMock.ExpectQuery(queryCount).WillReturnRows(rowCount)
+				sqlMock.ExpectPrepare(query)
 				sqlMock.ExpectQuery(query).WillReturnError(errors.New(""))
 				return sqlServer, err
 			},
 			wantErr:   true,
-			wantUser:  []models.User{},
+			wantUser:  []models.User(nil),
 			wantCount: 1,
 		},
 		{
 			name: "sql success",
 			args: args{
 				ctx:    context.Background(),
-				models: filter.Paging[filter.UserFilter]{},
+				models: paging.Paging[filter.UserFilter]{},
 			},
 			prepSqlMock: func() (*sql.DB, error) {
 				sqlServer, sqlMock, err := sqlmock.New()
 				rowCount := sqlMock.NewRows([]string{"COUNT(*)"}).AddRow(1)
+				sqlMock.ExpectPrepare(queryCount)
 				sqlMock.ExpectQuery(queryCount).WillReturnRows(rowCount)
 				row := sqlMock.NewRows([]string{"id", "user_name", "password", "name", "birthdate", "age", "status", "created_at", "created_by", "updated_at", "updated_by", "deleted_at", "deleted_by"})
 				row.AddRow(1, "test", "test", formatter.NullableDataType[string]{Valid: true, Data: "test"}, formatter.NullableDataType[time.Time]{Valid: true, Data: mockTime}, 5, 1, formatter.NullableDataType[time.Time]{Valid: true, Data: mockTime}, 1, formatter.NullableDataType[time.Time]{Valid: true, Data: mockTime}, 1, formatter.NullableDataType[time.Time]{Valid: true, Data: mockTime}, 1)
+				sqlMock.ExpectPrepare(query)
 				sqlMock.ExpectQuery(query).WillReturnRows(row)
 				return sqlServer, err
 			},

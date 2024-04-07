@@ -28,6 +28,7 @@ build:
 
 .PHONY: run
 run: swaggo build
+	@go mod tidy
 	@./build/app
 
 .PHONY: mock

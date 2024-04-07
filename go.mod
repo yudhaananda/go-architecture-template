@@ -14,6 +14,7 @@ require (
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.8.12
+	github.com/yudhaananda/go-common v0.0.2-0.20240407184933-ce1e82dc6916
 	golang.org/x/crypto v0.9.0
 )
 

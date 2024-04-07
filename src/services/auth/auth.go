@@ -7,10 +7,12 @@ import (
 	"template/src/models"
 	"template/src/repositories/auth"
 	"template/src/repositories/user"
+
+	"github.com/yudhaananda/go-common/paging"
 )
 
 type Interface interface {
-	Register(ctx context.Context, input models.Query[models.UserInput]) error
+	Register(ctx context.Context, input models.UserInput) error
 	Login(ctx context.Context, input models.Login) ([]models.User, string, error)
 }
 
@@ -28,12 +30,12 @@ func Init(param Param) *authService {
 	return &authService{userRepository: param.UserRepository, authRepository: param.AuthRepository}
 }
 
-func (s *authService) Register(ctx context.Context, input models.Query[models.UserInput]) error {
-	_, count, err := s.userRepository.Get(ctx, filter.Paging[filter.UserFilter]{
+func (s *authService) Register(ctx context.Context, input models.UserInput) error {
+	_, count, err := s.userRepository.Get(ctx, paging.Paging[filter.UserFilter]{
 		Page: 1,
 		Take: 1,
 		Filter: filter.UserFilter{
-			UserName: input.Model.UserName,
+			UserName: input.UserName,
 		},
 	})
 	if err != nil {
@@ -43,13 +45,13 @@ func (s *authService) Register(ctx context.Context, input models.Query[models.Us
 		return errors.New("username already taken by another user")
 	}
 
-	password, err := s.authRepository.HashPassword([]byte(input.Model.Password))
+	password, err := s.authRepository.HashPassword([]byte(input.Password))
 	if err != nil {
 		return err
 	}
-	input.Model.Password = password
+	input.Password = password
 
-	err = s.userRepository.Create(ctx, input)
+	err = s.userRepository.Create(ctx, input, nil)
 	if err != nil {
 		return err
 	}
@@ -58,7 +60,7 @@ func (s *authService) Register(ctx context.Context, input models.Query[models.Us
 
 func (s *authService) Login(ctx context.Context, input models.Login) ([]models.User, string, error) {
 
-	users, _, err := s.userRepository.Get(ctx, filter.Paging[filter.UserFilter]{
+	users, _, err := s.userRepository.Get(ctx, paging.Paging[filter.UserFilter]{
 		Page: 1,
 		Take: 1,
 		Filter: filter.UserFilter{

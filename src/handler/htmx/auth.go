@@ -60,9 +60,7 @@ func (h *htmx) RegisterValidate(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
-	err = h.service.Auth.Register(ctx, models.Query[models.UserInput]{
-		Model: input.ToUserInput(),
-	})
+	err = h.service.Auth.Register(ctx, input.ToUserInput())
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return

@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/yudhaananda/go-common/paging"
 )
 
 func Test_userService_Create(t *testing.T) {
@@ -30,7 +31,7 @@ func Test_userService_Create(t *testing.T) {
 	}
 	service := user.Init(params)
 	type args struct {
-		Input models.Query[models.UserInput]
+		Input models.UserInput
 	}
 
 	mockTime := time.Date(2022, 5, 11, 0, 0, 0, 0, time.Local)
@@ -52,32 +53,26 @@ func Test_userService_Create(t *testing.T) {
 		{
 			name: "create user error",
 			args: args{
-				Input: models.Query[models.UserInput]{},
+				Input: models.UserInput{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Create(context, models.Query[models.UserInput]{
-					Model: models.UserInput{
-						CreatedBy: context.Value(models.UserKey).(models.User).Id,
-						CreatedAt: mockTime,
-					},
-				}).Return(assert.AnError)
+				mock.user.EXPECT().Create(context, models.UserInput{
+					CreatedBy: context.Value(models.UserKey).(models.User).Id,
+					CreatedAt: mockTime,
+				}, nil).Return(assert.AnError)
 			},
 			wantErr: true,
 		},
 		{
 			name: "create user success",
 			args: args{
-				models.Query[models.UserInput]{
-					Model: models.UserInput{},
-				},
+				models.UserInput{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Create(context, models.Query[models.UserInput]{
-					Model: models.UserInput{
-						CreatedBy: context.Value(models.UserKey).(models.User).Id,
-						CreatedAt: mockTime,
-					},
-				}).Return(nil)
+				mock.user.EXPECT().Create(context, models.UserInput{
+					CreatedBy: context.Value(models.UserKey).(models.User).Id,
+					CreatedAt: mockTime,
+				}, nil).Return(nil)
 			},
 		},
 	}
@@ -111,7 +106,7 @@ func Test_userService_Update(t *testing.T) {
 	}
 	service := user.Init(params)
 	type args struct {
-		Input models.Query[models.UserInput]
+		Input models.UserInput
 		Id    int
 	}
 
@@ -134,34 +129,28 @@ func Test_userService_Update(t *testing.T) {
 		{
 			name: "update user error",
 			args: args{
-				Input: models.Query[models.UserInput]{},
+				Input: models.UserInput{},
 				Id:    1,
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Update(context, models.Query[models.UserInput]{
-					Model: models.UserInput{
-						UpdatedBy: context.Value(models.UserKey).(models.User).Id,
-						UpdatedAt: mockTime,
-					},
-				}, 1).Return(assert.AnError)
+				mock.user.EXPECT().Update(context, models.UserInput{
+					UpdatedBy: context.Value(models.UserKey).(models.User).Id,
+					UpdatedAt: mockTime,
+				}, 1, nil).Return(assert.AnError)
 			},
 			wantErr: true,
 		},
 		{
 			name: "update user success",
 			args: args{
-				Input: models.Query[models.UserInput]{
-					Model: models.UserInput{},
-				},
-				Id: 1,
+				Input: models.UserInput{},
+				Id:    1,
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Update(context, models.Query[models.UserInput]{
-					Model: models.UserInput{
-						UpdatedBy: context.Value(models.UserKey).(models.User).Id,
-						UpdatedAt: mockTime,
-					},
-				}, 1).Return(nil)
+				mock.user.EXPECT().Update(context, models.UserInput{
+					UpdatedBy: context.Value(models.UserKey).(models.User).Id,
+					UpdatedAt: mockTime,
+				}, 1, nil).Return(nil)
 			},
 		},
 	}
@@ -220,13 +209,11 @@ func Test_userService_Delete(t *testing.T) {
 				Id: 1,
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Update(context, models.Query[models.UserInput]{
-					Model: models.UserInput{
-						DeletedBy: context.Value(models.UserKey).(models.User).Id,
-						DeletedAt: mockTime,
-						Status:    -1,
-					},
-				}, 1).Return(assert.AnError)
+				mock.user.EXPECT().Update(context, models.UserInput{
+					DeletedBy: context.Value(models.UserKey).(models.User).Id,
+					DeletedAt: mockTime,
+					Status:    -1,
+				}, 1, nil).Return(assert.AnError)
 			},
 			wantErr: true,
 		},
@@ -236,13 +223,11 @@ func Test_userService_Delete(t *testing.T) {
 				Id: 1,
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Update(context, models.Query[models.UserInput]{
-					Model: models.UserInput{
-						DeletedBy: context.Value(models.UserKey).(models.User).Id,
-						DeletedAt: mockTime,
-						Status:    -1,
-					},
-				}, 1).Return(nil)
+				mock.user.EXPECT().Update(context, models.UserInput{
+					DeletedBy: context.Value(models.UserKey).(models.User).Id,
+					DeletedAt: mockTime,
+					Status:    -1,
+				}, 1, nil).Return(nil)
 			},
 		},
 	}
@@ -276,7 +261,7 @@ func Test_userService_Get(t *testing.T) {
 	}
 	service := user.Init(params)
 	type args struct {
-		Paging filter.Paging[filter.UserFilter]
+		Paging paging.Paging[filter.UserFilter]
 	}
 
 	restoreAll := func() {
@@ -295,10 +280,10 @@ func Test_userService_Get(t *testing.T) {
 		{
 			name: "get user error",
 			args: args{
-				filter.Paging[filter.UserFilter]{},
+				paging.Paging[filter.UserFilter]{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context, filter.Paging[filter.UserFilter]{IsActive: true}).Return([]models.User{}, 0, assert.AnError)
+				mock.user.EXPECT().Get(context, paging.Paging[filter.UserFilter]{IsActive: true}).Return([]models.User{}, 0, assert.AnError)
 			},
 			want:      []models.User{},
 			wantCount: 0,
@@ -307,10 +292,10 @@ func Test_userService_Get(t *testing.T) {
 		{
 			name: "get user success",
 			args: args{
-				filter.Paging[filter.UserFilter]{},
+				paging.Paging[filter.UserFilter]{},
 			},
 			mockfunc: func(a args, mock mockfields) {
-				mock.user.EXPECT().Get(context, filter.Paging[filter.UserFilter]{IsActive: true}).Return([]models.User{
+				mock.user.EXPECT().Get(context, paging.Paging[filter.UserFilter]{IsActive: true}).Return([]models.User{
 					{},
 					{},
 				}, 2, nil)

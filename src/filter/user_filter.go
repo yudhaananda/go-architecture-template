@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"template/src/models"
 	"time"
+
+	"github.com/yudhaananda/go-common/validation"
 )
 
 type UserFilter struct {
@@ -24,7 +26,7 @@ func (m UserFilter) ToHTMXFilter() (result []models.HTMXFilter, dateFilter []mod
 			dateFilter = append(dateFilter, models.DateJQuery{Value: tpe.Field(i).Tag.Get("form")})
 		}
 		value := template.HTML(fmt.Sprint(ref.Field(i).Interface()))
-		if isEmpty(fmt.Sprint(ref.Field(i).Interface())) {
+		if validation.IsEmpty(fmt.Sprint(ref.Field(i).Interface())) {
 			value = ""
 		}
 		result = append(result, models.HTMXFilter{
