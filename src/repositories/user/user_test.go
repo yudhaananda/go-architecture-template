@@ -7,13 +7,13 @@ import (
 	"errors"
 	"regexp"
 	"template/src/filter"
-	"template/src/formatter"
 	"template/src/models"
 	"testing"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
+	"github.com/yudhaananda/go-common/formatter"
 	"github.com/yudhaananda/go-common/paging"
 	querybuilder "github.com/yudhaananda/go-common/query_builder"
 )
@@ -270,7 +270,7 @@ func TestGet(t *testing.T) {
 				sqlMock.ExpectPrepare(queryCount)
 				sqlMock.ExpectQuery(queryCount).WillReturnRows(rowCount)
 				row := sqlMock.NewRows([]string{"id", "user_name", "password", "name", "birthdate", "age", "status", "created_at", "created_by", "updated_at", "updated_by", "deleted_at", "deleted_by"})
-				row.AddRow(1, "test", "test", formatter.NullableDataType[string]{Valid: true, Data: "test"}, formatter.NullableDataType[time.Time]{Valid: true, Data: mockTime}, 5, 1, formatter.NullableDataType[time.Time]{Valid: true, Data: mockTime}, 1, formatter.NullableDataType[time.Time]{Valid: true, Data: mockTime}, 1, formatter.NullableDataType[time.Time]{Valid: true, Data: mockTime}, 1)
+				row.AddRow(1, "test", "test", formatter.Null[string]{Valid: true, Data: "test"}, formatter.Null[time.Time]{Valid: true, Data: mockTime}, 5, 1, formatter.Null[time.Time]{Valid: true, Data: mockTime}, 1, formatter.Null[time.Time]{Valid: true, Data: mockTime}, 1, formatter.Null[time.Time]{Valid: true, Data: mockTime}, 1)
 				sqlMock.ExpectPrepare(query)
 				sqlMock.ExpectQuery(query).WillReturnRows(row)
 				return sqlServer, err
@@ -280,40 +280,40 @@ func TestGet(t *testing.T) {
 					Id:       1,
 					UserName: "test",
 					Password: "test",
-					Name: formatter.NullableDataType[string]{
+					Name: formatter.Null[string]{
 						Valid: true,
 						Data:  "test",
 					},
-					Birthdate: formatter.NullableDataType[time.Time]{
+					Birthdate: formatter.Null[time.Time]{
 						Data:  mockTime,
 						Valid: true,
 					},
-					Age: formatter.NullableDataType[int64]{
+					Age: formatter.Null[int64]{
 						Data:  5,
 						Valid: true,
 					},
 					Status: 1,
-					CreatedAt: formatter.NullableDataType[time.Time]{
+					CreatedAt: formatter.Null[time.Time]{
 						Data:  mockTime,
 						Valid: true,
 					},
-					UpdatedAt: formatter.NullableDataType[time.Time]{
+					UpdatedAt: formatter.Null[time.Time]{
 						Data:  mockTime,
 						Valid: true,
 					},
-					DeletedAt: formatter.NullableDataType[time.Time]{
+					DeletedAt: formatter.Null[time.Time]{
 						Data:  mockTime,
 						Valid: true,
 					},
-					CreatedBy: formatter.NullableDataType[int64]{
+					CreatedBy: formatter.Null[int64]{
 						Data:  1,
 						Valid: true,
 					},
-					UpdatedBy: formatter.NullableDataType[int64]{
+					UpdatedBy: formatter.Null[int64]{
 						Data:  1,
 						Valid: true,
 					},
-					DeletedBy: formatter.NullableDataType[int64]{
+					DeletedBy: formatter.Null[int64]{
 						Data:  1,
 						Valid: true,
 					},

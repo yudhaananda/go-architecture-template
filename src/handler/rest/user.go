@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strconv"
 	"template/src/filter"
-	"template/src/formatter"
 	"template/src/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/yudhaananda/go-common/formatter"
 	"github.com/yudhaananda/go-common/paging"
 	"github.com/yudhaananda/go-common/response"
 )

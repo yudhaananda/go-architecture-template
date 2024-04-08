@@ -2,10 +2,10 @@ package auth
 
 import (
 	"math/rand"
-	"template/src/models"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/yudhaananda/go-common/env"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -43,7 +43,12 @@ func (s *authRepository) GenerateToken(userId int, userName string) (string, err
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 
-	signedToken, err := token.SignedString(models.GetSecret())
+	secret, err := env.GetSecret()
+	if err != nil {
+		return "", err
+	}
+
+	signedToken, err := token.SignedString(secret)
 
 	if err != nil {
 		return signedToken, err

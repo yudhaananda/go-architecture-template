@@ -11,6 +11,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/yudhaananda/go-common/env"
 	"github.com/yudhaananda/go-common/paging"
 	"github.com/yudhaananda/go-common/response"
 )
@@ -104,7 +105,11 @@ func (s *authMiddleware) validateToken(token string) (*jwt.Token, error) {
 		if !ok {
 			return nil, errors.New("invalid token")
 		}
-		return []byte(models.GetSecret()), nil
+		secret, err := env.GetSecret()
+		if err != nil {
+			return nil, err
+		}
+		return []byte(secret), nil
 	})
 
 	if err != nil {

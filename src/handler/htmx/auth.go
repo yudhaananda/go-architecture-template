@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	htmxmodel "github.com/yudhaananda/go-common/htmx_model"
 )
 
 const (
@@ -18,14 +19,14 @@ const (
 )
 
 func (h *htmx) Login(ctx *gin.Context) {
-	models := models.HTMX[models.Login]{}
+	models := htmxmodel.HTMX[models.Login]{}
 	member := models.GenerateHTML(LoginMember)
 	tmpl := template.Must(template.ParseFiles("./src/view/login.html"))
 	tmpl.Execute(ctx.Writer, member)
 }
 
 func (h *htmx) Register(ctx *gin.Context) {
-	models := models.HTMX[models.Register]{}
+	models := htmxmodel.HTMX[models.Register]{}
 	member := models.GenerateHTML(LoginMember)
 	tmpl := template.Must(template.ParseFiles("./src/view/register.html"))
 	tmpl.Execute(ctx.Writer, member)

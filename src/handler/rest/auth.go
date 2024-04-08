@@ -2,10 +2,10 @@ package rest
 
 import (
 	"net/http"
-	"template/src/formatter"
 	"template/src/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/yudhaananda/go-common/formatter"
 	"github.com/yudhaananda/go-common/response"
 )
 

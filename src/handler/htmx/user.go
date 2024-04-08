@@ -7,11 +7,13 @@ import (
 	"strconv"
 	"strings"
 	"template/src/filter"
-	"template/src/formatter"
 	"template/src/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	htmxfilter "github.com/yudhaananda/go-common/filter"
+	"github.com/yudhaananda/go-common/formatter"
+	htmxmodel "github.com/yudhaananda/go-common/htmx_model"
 	"github.com/yudhaananda/go-common/paging"
 )
 
@@ -42,8 +44,8 @@ func (h *htmx) DeleteUser(ctx *gin.Context) {
 }
 
 func (h *htmx) ModalCreateUser(ctx *gin.Context) {
-	user := models.HTMX[models.User]{}
-	modal := models.Modal{
+	user := htmxmodel.HTMX[models.User]{}
+	modal := htmxmodel.Modal{
 		Name:   template.HTML("Create " + User),
 		Link:   template.HTML(UserLink),
 		Method: "post",
@@ -68,10 +70,10 @@ func (h *htmx) ModalEditUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
-	htmxUsers := models.HTMX[models.User]{
+	htmxUsers := htmxmodel.HTMX[models.User]{
 		Model: users[0],
 	}
-	modal := models.Modal{
+	modal := htmxmodel.Modal{
 		Name:   template.HTML("Edit " + User),
 		Link:   template.HTML(UserLink),
 		Id:     template.HTML(fmt.Sprint(id)),
@@ -122,7 +124,7 @@ func (h *htmx) EditUser(ctx *gin.Context) {
 }
 
 func (h *htmx) UserContent(ctx *gin.Context) {
-	user := models.HTMX[models.User]{}
+	user := htmxmodel.HTMX[models.User]{}
 	var filter paging.Paging[filter.UserFilter]
 	filter.SetDefault()
 	if err := h.BindParams(ctx, &filter); err != nil {
@@ -132,7 +134,7 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 	htmxGet := user.ToHeader()
 	htmxGet.SectionName = User
 	htmxGet.Link = UserLink
-	htmxGet.Filter, htmxGet.DateJQuery = filter.Filter.ToHTMXFilter()
+	htmxGet.Filter, htmxGet.DateJQuery = htmxfilter.ToHTMXFilter(filter.Filter)
 	for key, values := range ctx.Request.URL.Query() {
 		if key == "page" {
 			continue
@@ -146,7 +148,7 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 		}
 	}
 	for _, feature := range models.Features {
-		temp := models.SideBar{
+		temp := htmxmodel.SideBar{
 			Name: template.HTML(feature.Name),
 			Link: template.HTML(feature.Link),
 		}
@@ -196,7 +198,7 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 			htmxGet.NextPage = template.HTML(fmt.Sprint(i + 1))
 			htmxGet.PreviousPage = template.HTML(fmt.Sprint(i - 1))
 		}
-		htmxGet.Pagination = append(htmxGet.Pagination, models.HTMXPagination{
+		htmxGet.Pagination = append(htmxGet.Pagination, htmxmodel.HTMXPagination{
 			Active:    template.HTML(active),
 			Link:      UserLink,
 			Page:      template.HTML(fmt.Sprint(i)),
@@ -206,7 +208,7 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 	}
 
 	for _, user := range users {
-		userHtmx := models.HTMX[models.User]{
+		userHtmx := htmxmodel.HTMX[models.User]{
 			Model: user,
 		}
 		htmxGet.Column = append(htmxGet.Column, userHtmx.ToColumn(strings.ToLower(User)))

@@ -6,6 +6,7 @@ import (
 	"template/src/models"
 
 	"github.com/gin-gonic/gin"
+	htmxmodel "github.com/yudhaananda/go-common/htmx_model"
 )
 
 const (
@@ -20,11 +21,11 @@ func (h *htmx) GetDashboard(ctx *gin.Context) {
 }
 
 func (h *htmx) DashboardContent(ctx *gin.Context) {
-	htmxGet := models.HTMXGet{
+	htmxGet := htmxmodel.HTMXGet{
 		SectionName: Dashboard,
 	}
 	for _, feature := range models.Features {
-		temp := models.SideBar{
+		temp := htmxmodel.SideBar{
 			Name: template.HTML(feature.Name),
 			Link: template.HTML(feature.Link),
 		}
