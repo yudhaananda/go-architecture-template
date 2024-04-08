@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/yudhaananda/go-common/formatter"
 	"github.com/yudhaananda/go-common/paging"
 )
 
@@ -171,7 +172,7 @@ func Test_authService_Login(t *testing.T) {
 		args      args
 		mockfunc  func(a args, mock mockfields)
 		wantErr   bool
-		wantUser  []models.User
+		wantUser  *models.UserDto
 		wantToken string
 	}{
 		{
@@ -182,7 +183,7 @@ func Test_authService_Login(t *testing.T) {
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Get(context.Background(), gomock.Any()).Return([]models.User{}, 0, assert.AnError)
 			},
-			wantUser: []models.User{},
+			wantUser: nil,
 			wantErr:  true,
 		},
 		{
@@ -193,7 +194,7 @@ func Test_authService_Login(t *testing.T) {
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Get(context.Background(), gomock.Any()).Return([]models.User{}, 0, nil)
 			},
-			wantUser: []models.User{},
+			wantUser: nil,
 			wantErr:  true,
 		},
 		{
@@ -211,7 +212,7 @@ func Test_authService_Login(t *testing.T) {
 				}, 1, nil)
 				mock.auth.EXPECT().ComparePassword([]byte(""), []byte("")).Return(assert.AnError)
 			},
-			wantUser: []models.User{},
+			wantUser: nil,
 			wantErr:  true,
 		},
 		{
@@ -226,14 +227,14 @@ func Test_authService_Login(t *testing.T) {
 					Filter: filter.UserFilter{},
 				}).Return([]models.User{
 					{
-						Id:       1,
-						UserName: "test",
+						Id:       formatter.NewNull[int64](1),
+						UserName: formatter.NewNull[string]("test"),
 					},
 				}, 1, nil)
 				mock.auth.EXPECT().ComparePassword([]byte(""), []byte("")).Return(nil)
 				mock.auth.EXPECT().GenerateToken(1, "test").Return("", assert.AnError)
 			},
-			wantUser: []models.User{},
+			wantUser: nil,
 			wantErr:  true,
 		},
 		{
@@ -248,18 +249,16 @@ func Test_authService_Login(t *testing.T) {
 					Filter: filter.UserFilter{},
 				}).Return([]models.User{
 					{
-						Id:       1,
-						UserName: "test",
+						Id:       formatter.NewNull[int64](1),
+						UserName: formatter.NewNull[string]("test"),
 					},
 				}, 1, nil)
 				mock.auth.EXPECT().ComparePassword([]byte(""), []byte("")).Return(nil)
 				mock.auth.EXPECT().GenerateToken(1, "test").Return("token", nil)
 			},
-			wantUser: []models.User{
-				{
-					Id:       1,
-					UserName: "test",
-				},
+			wantUser: &models.UserDto{
+				Id:       1,
+				UserName: "test",
 			},
 			wantToken: "token",
 		},

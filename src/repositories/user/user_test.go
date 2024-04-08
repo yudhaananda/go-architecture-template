@@ -270,53 +270,40 @@ func TestGet(t *testing.T) {
 				sqlMock.ExpectPrepare(queryCount)
 				sqlMock.ExpectQuery(queryCount).WillReturnRows(rowCount)
 				row := sqlMock.NewRows([]string{"id", "user_name", "password", "name", "birthdate", "age", "status", "created_at", "created_by", "updated_at", "updated_by", "deleted_at", "deleted_by"})
-				row.AddRow(1, "test", "test", formatter.Null[string]{Valid: true, Data: "test"}, formatter.Null[time.Time]{Valid: true, Data: mockTime}, 5, 1, formatter.Null[time.Time]{Valid: true, Data: mockTime}, 1, formatter.Null[time.Time]{Valid: true, Data: mockTime}, 1, formatter.Null[time.Time]{Valid: true, Data: mockTime}, 1)
+				row.AddRow(
+					formatter.NewNull[int64](1),
+					formatter.NewNull[string]("test"),
+					formatter.NewNull[string]("test"),
+					formatter.NewNull[string]("test"),
+					formatter.NewNull[time.Time](mockTime),
+					formatter.NewNull[int64](5),
+					formatter.NewNull[int64](1),
+					formatter.NewNull[time.Time](mockTime),
+					formatter.NewNull[int64](1),
+					formatter.NewNull[time.Time](mockTime),
+					formatter.NewNull[int64](1),
+					formatter.NewNull[time.Time](mockTime),
+					formatter.NewNull[int64](1),
+				)
 				sqlMock.ExpectPrepare(query)
 				sqlMock.ExpectQuery(query).WillReturnRows(row)
 				return sqlServer, err
 			},
 			wantUser: []models.User{
 				{
-					Id:       1,
-					UserName: "test",
-					Password: "test",
-					Name: formatter.Null[string]{
-						Valid: true,
-						Data:  "test",
-					},
-					Birthdate: formatter.Null[time.Time]{
-						Data:  mockTime,
-						Valid: true,
-					},
-					Age: formatter.Null[int64]{
-						Data:  5,
-						Valid: true,
-					},
-					Status: 1,
-					CreatedAt: formatter.Null[time.Time]{
-						Data:  mockTime,
-						Valid: true,
-					},
-					UpdatedAt: formatter.Null[time.Time]{
-						Data:  mockTime,
-						Valid: true,
-					},
-					DeletedAt: formatter.Null[time.Time]{
-						Data:  mockTime,
-						Valid: true,
-					},
-					CreatedBy: formatter.Null[int64]{
-						Data:  1,
-						Valid: true,
-					},
-					UpdatedBy: formatter.Null[int64]{
-						Data:  1,
-						Valid: true,
-					},
-					DeletedBy: formatter.Null[int64]{
-						Data:  1,
-						Valid: true,
-					},
+					Id:        formatter.NewNull[int64](1),
+					UserName:  formatter.NewNull[string]("test"),
+					Password:  formatter.NewNull[string]("test"),
+					Name:      formatter.NewNull[string]("test"),
+					Birthdate: formatter.NewNull[time.Time](mockTime),
+					Age:       formatter.NewNull[int64](5),
+					Status:    formatter.NewNull[int64](1),
+					CreatedAt: formatter.NewNull[time.Time](mockTime),
+					UpdatedAt: formatter.NewNull[time.Time](mockTime),
+					DeletedAt: formatter.NewNull[time.Time](mockTime),
+					CreatedBy: formatter.NewNull[int64](1),
+					UpdatedBy: formatter.NewNull[int64](1),
+					DeletedBy: formatter.NewNull[int64](1),
 				},
 			},
 			wantCount: 1,

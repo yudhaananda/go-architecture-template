@@ -70,7 +70,7 @@ func (h *htmx) ModalEditUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
-	htmxUsers := htmxmodel.HTMX[models.User]{
+	htmxUsers := htmxmodel.HTMX[models.UserDto]{
 		Model: users[0],
 	}
 	modal := htmxmodel.Modal{
@@ -208,7 +208,7 @@ func (h *htmx) UserContent(ctx *gin.Context) {
 	}
 
 	for _, user := range users {
-		userHtmx := htmxmodel.HTMX[models.User]{
+		userHtmx := htmxmodel.HTMX[models.UserDto]{
 			Model: user,
 		}
 		htmxGet.Column = append(htmxGet.Column, userHtmx.ToColumn(strings.ToLower(User)))

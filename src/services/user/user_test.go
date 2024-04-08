@@ -11,13 +11,14 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/yudhaananda/go-common/formatter"
 	"github.com/yudhaananda/go-common/paging"
 )
 
 func Test_userService_Create(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	context := context.WithValue(context.Background(), models.UserKey, models.User{Id: 1})
+	context := context.WithValue(context.Background(), models.UserKey, models.User{Id: formatter.NewNull[int64](1)})
 
 	userRepo := mock_user.NewMockInterface(ctrl)
 	type mockfields struct {
@@ -57,7 +58,7 @@ func Test_userService_Create(t *testing.T) {
 			},
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Create(context, models.UserInput{
-					CreatedBy: context.Value(models.UserKey).(models.User).Id,
+					CreatedBy: context.Value(models.UserKey).(models.User).Id.Data,
 					CreatedAt: mockTime,
 				}, nil).Return(assert.AnError)
 			},
@@ -70,7 +71,7 @@ func Test_userService_Create(t *testing.T) {
 			},
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Create(context, models.UserInput{
-					CreatedBy: context.Value(models.UserKey).(models.User).Id,
+					CreatedBy: context.Value(models.UserKey).(models.User).Id.Data,
 					CreatedAt: mockTime,
 				}, nil).Return(nil)
 			},
@@ -92,7 +93,7 @@ func Test_userService_Create(t *testing.T) {
 func Test_userService_Update(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	context := context.WithValue(context.Background(), models.UserKey, models.User{Id: 1})
+	context := context.WithValue(context.Background(), models.UserKey, models.User{Id: formatter.NewNull[int64](1)})
 
 	userRepo := mock_user.NewMockInterface(ctrl)
 	type mockfields struct {
@@ -134,7 +135,7 @@ func Test_userService_Update(t *testing.T) {
 			},
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Update(context, models.UserInput{
-					UpdatedBy: context.Value(models.UserKey).(models.User).Id,
+					UpdatedBy: context.Value(models.UserKey).(models.User).Id.Data,
 					UpdatedAt: mockTime,
 				}, 1, nil).Return(assert.AnError)
 			},
@@ -148,7 +149,7 @@ func Test_userService_Update(t *testing.T) {
 			},
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Update(context, models.UserInput{
-					UpdatedBy: context.Value(models.UserKey).(models.User).Id,
+					UpdatedBy: context.Value(models.UserKey).(models.User).Id.Data,
 					UpdatedAt: mockTime,
 				}, 1, nil).Return(nil)
 			},
@@ -170,7 +171,7 @@ func Test_userService_Update(t *testing.T) {
 func Test_userService_Delete(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	context := context.WithValue(context.Background(), models.UserKey, models.User{Id: 1})
+	context := context.WithValue(context.Background(), models.UserKey, models.User{Id: formatter.NewNull[int64](1)})
 
 	userRepo := mock_user.NewMockInterface(ctrl)
 	type mockfields struct {
@@ -210,7 +211,7 @@ func Test_userService_Delete(t *testing.T) {
 			},
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Update(context, models.UserInput{
-					DeletedBy: context.Value(models.UserKey).(models.User).Id,
+					DeletedBy: context.Value(models.UserKey).(models.User).Id.Data,
 					DeletedAt: mockTime,
 					Status:    -1,
 				}, 1, nil).Return(assert.AnError)
@@ -224,7 +225,7 @@ func Test_userService_Delete(t *testing.T) {
 			},
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Update(context, models.UserInput{
-					DeletedBy: context.Value(models.UserKey).(models.User).Id,
+					DeletedBy: context.Value(models.UserKey).(models.User).Id.Data,
 					DeletedAt: mockTime,
 					Status:    -1,
 				}, 1, nil).Return(nil)
@@ -273,7 +274,7 @@ func Test_userService_Get(t *testing.T) {
 		name      string
 		args      args
 		mockfunc  func(a args, mock mockfields)
-		want      []models.User
+		want      []models.UserDto
 		wantCount int
 		wantErr   bool
 	}{
@@ -285,7 +286,7 @@ func Test_userService_Get(t *testing.T) {
 			mockfunc: func(a args, mock mockfields) {
 				mock.user.EXPECT().Get(context, paging.Paging[filter.UserFilter]{IsActive: true}).Return([]models.User{}, 0, assert.AnError)
 			},
-			want:      []models.User{},
+			want:      nil,
 			wantCount: 0,
 			wantErr:   true,
 		},
@@ -300,7 +301,7 @@ func Test_userService_Get(t *testing.T) {
 					{},
 				}, 2, nil)
 			},
-			want: []models.User{
+			want: []models.UserDto{
 				{},
 				{},
 			},

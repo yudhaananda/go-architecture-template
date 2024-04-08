@@ -13,7 +13,7 @@ import (
 
 type Interface interface {
 	Register(ctx context.Context, input models.UserInput) error
-	Login(ctx context.Context, input models.Login) ([]models.User, string, error)
+	Login(ctx context.Context, input models.Login) (*models.UserDto, string, error)
 }
 
 type authService struct {
@@ -58,7 +58,7 @@ func (s *authService) Register(ctx context.Context, input models.UserInput) erro
 	return nil
 }
 
-func (s *authService) Login(ctx context.Context, input models.Login) ([]models.User, string, error) {
+func (s *authService) Login(ctx context.Context, input models.Login) (*models.UserDto, string, error) {
 
 	users, _, err := s.userRepository.Get(ctx, paging.Paging[filter.UserFilter]{
 		Page: 1,
@@ -68,21 +68,21 @@ func (s *authService) Login(ctx context.Context, input models.Login) ([]models.U
 		},
 	})
 	if err != nil {
-		return []models.User{}, "", err
+		return nil, "", err
 	}
 	if len(users) == 0 {
-		return []models.User{}, "", errors.New("user not found")
+		return nil, "", errors.New("user not found")
 	}
 
-	err = s.authRepository.ComparePassword([]byte(users[0].Password), []byte(input.Password))
+	err = s.authRepository.ComparePassword([]byte(users[0].Password.Data), []byte(input.Password))
 	if err != nil {
-		return []models.User{}, "", errors.New("wrong password")
+		return nil, "", errors.New("wrong password")
 	}
 
-	token, err := s.authRepository.GenerateToken(int(users[0].Id), users[0].UserName)
+	token, err := s.authRepository.GenerateToken(int(users[0].Id.Data), users[0].UserName.Data)
 	if err != nil {
-		return []models.User{}, "", err
+		return nil, "", err
 	}
 
-	return users, token, nil
+	return users[0].ToDto(), token, nil
 }
