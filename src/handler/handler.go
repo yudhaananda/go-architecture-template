@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"template/src/handler/htmx"
 	"template/src/handler/rest"
 	"template/src/middleware"
 	"template/src/services"
@@ -15,7 +14,6 @@ type Handler interface {
 
 type handler struct {
 	rest rest.Rest
-	htmx htmx.Htmx
 }
 
 type InitParam struct {
@@ -26,14 +24,12 @@ type InitParam struct {
 func Init(params InitParam) Handler {
 	rest := &handler{
 		rest: rest.Init(rest.InitParam{Service: params.Service, Middleware: params.Middleware}),
-		htmx: htmx.Init(htmx.InitParam{Service: params.Service, Middleware: params.Middleware}),
 	}
 	return rest
 }
 
 func (h *handler) Run() {
 	router := gin.Default()
-	router = h.htmx.RegisterPath(router)
 	router = h.rest.RegisterPath(router)
 	if err := router.Run(); err != nil {
 		panic(err)
